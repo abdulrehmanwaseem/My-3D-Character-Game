@@ -4,10 +4,13 @@ import {
   OrthographicCamera,
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
+import { Map } from "./Csgo_dust_2_Map";
 import { useRef } from "react";
 
 const Scene = () => {
   const shadowCameraRef = useRef();
+  console.log(shadowCameraRef);
+
   return (
     <>
       <OrbitControls />
@@ -27,8 +30,10 @@ const Scene = () => {
           top={10}
           bottom={-20}
           attach={"shadow-camera"}
+          ref={shadowCameraRef}
         />
       </directionalLight>
+      <Map scale={0.7} position={[0, 0, 0]} />
       <ambientLight intensity={0.2} />
       <Perf minimal={true} />
     </>
