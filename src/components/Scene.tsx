@@ -36,7 +36,7 @@ const Scene = () => {
         />
       </directionalLight>
       <Physics debug>
-        <Map scale={0.7} position={[0, 0, 0]} />
+        <Map scale={0.7} position={[-3, 0, 0]} />
 
         <CharacterController />
       </Physics>
