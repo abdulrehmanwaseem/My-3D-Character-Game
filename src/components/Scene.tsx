@@ -16,7 +16,7 @@ const Scene = () => {
   return (
     <>
       <Perf minimal={true} />
-      <OrbitControls />
+      {/* <OrbitControls /> */}
       <Environment preset="sunset" />
       <directionalLight
         intensity={0.7}
