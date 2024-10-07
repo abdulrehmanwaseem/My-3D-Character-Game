@@ -13,12 +13,18 @@ const App = () => {
         camera={{ position: [3, 3, 3], near: 0.1, fov: 40 }}
         onPointerDown={(e) => {
           if (!isMobile()) {
-            (e.target as HTMLElement).requestPointerLock();
+            // (e.target as HTMLElement).requestPointerLock();
           }
         }}
       >
         <Scene />
       </Canvas>
+      // Controls image:
+      <img
+        className="absolute w-48 left-5 bottom-5 select-none lg:block hidden"
+        src="/images/controls.png"
+        alt="control keys"
+      />
     </Suspense>
   );
 };

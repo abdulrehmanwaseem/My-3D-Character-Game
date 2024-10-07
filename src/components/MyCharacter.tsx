@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import React from "react";
+import React, { useEffect } from "react";
 import { useGraph } from "@react-three/fiber";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { GLTF, SkeletonUtils } from "three-stdlib";
@@ -25,13 +25,23 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[];
 };
 
-export function Model(props: JSX.IntrinsicElements["group"]) {
+export function Character(props: JSX.IntrinsicElements["group"]) {
   const group = React.useRef<any>();
-  const { scene, animations } = useGLTF("/3d_character.glb");
+  const { scene, animations } = useGLTF("/models/3d_character.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
-  console.log(actions);
+
+  // useEffect(() => {
+  //   if (actions && animations.length > 0) {
+  //     const walkAction =
+  //       actions["Armature|Take 001|BaseLayer"];
+
+  //     if (walkAction) {
+  //       walkAction.reset().setLoop(THREE.LoopRepeat, Infinity).play();
+  //     }
+  //   }
+  // }, [actions, animations]);
 
   return (
     <group ref={group} {...props} dispose={null}>
@@ -46,6 +56,7 @@ export function Model(props: JSX.IntrinsicElements["group"]) {
               <primitive object={nodes.rp_nathan_animated_003_walking_root} />
               <skinnedMesh
                 name="rp_nathan_animated_003_walking_geo"
+                scale={2}
                 geometry={nodes.rp_nathan_animated_003_walking_geo.geometry}
                 material={materials.rp_nathan_animated_003_mat}
                 skeleton={nodes.rp_nathan_animated_003_walking_geo.skeleton}

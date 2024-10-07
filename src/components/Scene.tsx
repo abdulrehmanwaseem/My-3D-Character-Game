@@ -6,19 +6,21 @@ import {
 import { Perf } from "r3f-perf";
 import { Map } from "./Csgo_dust_2_Map";
 import { useRef } from "react";
+import * as THREE from "three";
+import { Physics } from "@react-three/rapier";
+import CharacterController from "./CharacterController";
 
 const Scene = () => {
-  const shadowCameraRef = useRef();
-  console.log(shadowCameraRef);
+  const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
 
   return (
     <>
+      <Perf minimal={true} />
       <OrbitControls />
       <Environment preset="sunset" />
       <directionalLight
         intensity={0.7}
         castShadow
-        // position={[-20, 20, 20]}
         position={[-15, 10, 15]}
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -33,9 +35,11 @@ const Scene = () => {
           ref={shadowCameraRef}
         />
       </directionalLight>
-      <Map scale={0.7} position={[0, 0, 0]} />
-      <ambientLight intensity={0.2} />
-      <Perf minimal={true} />
+      <Physics debug>
+        <Map scale={0.7} position={[0, 0, 0]} />
+
+        <CharacterController />
+      </Physics>
     </>
   );
 };
