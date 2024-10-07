@@ -56,10 +56,11 @@ export function Character(props: JSX.IntrinsicElements["group"]) {
               <primitive object={nodes.rp_nathan_animated_003_walking_root} />
               <skinnedMesh
                 name="rp_nathan_animated_003_walking_geo"
-                scale={2}
                 geometry={nodes.rp_nathan_animated_003_walking_geo.geometry}
                 material={materials.rp_nathan_animated_003_mat}
                 skeleton={nodes.rp_nathan_animated_003_walking_geo.skeleton}
+                castShadow
+                receiveShadow
               />
             </group>
           </group>
