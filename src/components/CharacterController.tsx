@@ -139,21 +139,26 @@ const CharacterController = () => {
       if (movement.y !== 0) {
         vel.y = JUMP_FORCE;
       }
-      character.current.rotation.y = lerpAngle(
-        character.current.rotation.y,
-        characterRotationTarget.current,
-        0.1
-      );
+
+      if (character.current) {
+        character.current.rotation.y = lerpAngle(
+          character.current.rotation.y,
+          characterRotationTarget.current,
+          0.1
+        );
+      }
 
       rigidBody.current.setLinvel(vel, true);
     }
 
     // Camera rotation and movement
-    container.current.rotation.y = THREE.MathUtils.lerp(
-      container.current?.rotation.y,
-      rotationTarget.current,
-      0.1
-    );
+    if (container.current) {
+      container.current.rotation.y = THREE.MathUtils.lerp(
+        container.current?.rotation.y,
+        rotationTarget.current,
+        0.1
+      );
+    }
 
     if (cameraPosition.current) {
       cameraPosition.current.getWorldPosition(cameraWorldPosition.current);
