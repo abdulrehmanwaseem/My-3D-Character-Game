@@ -6,14 +6,25 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
 import { degToRad } from "three/src/math/MathUtils.js";
-import { lerpAngle } from "../utils/helper.js";
+import { lerpAngle } from "../utils/helper.ts";
+
+interface Movement {
+  x: number;
+  y: number;
+  z: number;
+}
+
+interface RigidBodyRef {
+  linvel: () => { x: number; y: number; z: number };
+  setLinvel: (vel: { x: number; y: number; z: number }, wake: boolean) => void;
+}
 
 const CharacterController = () => {
-  const { positionX, positionY, positionZ } = useControls({
-    positionX: { value: 3, min: -10, max: 10, step: 0.1 },
-    positionY: { value: 0, min: -10, max: 10, step: 0.1 },
-    positionZ: { value: 0, min: -10, max: 10, step: 0.1 },
-  });
+  // const { positionX, positionY, positionZ } = useControls({
+  //   positionX: { value: 3, min: -10, max: 10, step: 0.1 },
+  //   positionY: { value: 0, min: -10, max: 10, step: 0.1 },
+  //   positionZ: { value: 0, min: -10, max: 10, step: 0.1 },
+  // });
 
   const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED, JUMP_FORCE } = useControls(
     "Character Controls",
@@ -30,7 +41,7 @@ const CharacterController = () => {
     }
   );
 
-  const rigidBody = useRef();
+  const rigidBody = useRef<RigidBodyRef | null>();
   const container = useRef<THREE.Group>(null);
   const character = useRef<THREE.Group>(null);
   const [isGrounded, setIsGrounded] = useState(true);
@@ -46,14 +57,13 @@ const CharacterController = () => {
   const isClicking = useRef(false);
 
   useEffect(() => {
-    const onMouseDown = (e) => {
+    const onMouseDown = (_: TouchEvent) => {
       isClicking.current = true;
     };
-    const onMouseUp = (e) => {
+    const onMouseUp = (_: TouchEvent) => {
       isClicking.current = false;
     };
 
-    // for touch movement
     document.addEventListener("touchstart", onMouseDown);
     document.addEventListener("touchend", onMouseUp);
     return () => {
@@ -66,7 +76,7 @@ const CharacterController = () => {
     if (rigidBody.current) {
       const vel = rigidBody.current?.linvel();
 
-      const movement = {
+      const movement: Movement = {
         x: 0,
         z: 0,
         y: 0,
@@ -99,7 +109,6 @@ const CharacterController = () => {
       if (get().right) {
         movement.x = -1;
       }
-      console.log(vel.y);
 
       if (Math.abs(vel.y) < 0.1 && !isGrounded) {
         console.log("t");
