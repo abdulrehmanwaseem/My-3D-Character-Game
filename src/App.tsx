@@ -8,6 +8,7 @@ const keyboardMap = [
   { name: "backward", keys: ["ArrowDown", "KeyS"] },
   { name: "left", keys: ["ArrowLeft", "KeyA"] },
   { name: "right", keys: ["ArrowRight", "KeyD"] },
+  { name: "jump", keys: ["Space", "ScrollUp"] },
   { name: "run", keys: ["Shift"] },
 ];
 
@@ -18,11 +19,14 @@ const App = () => {
     <Suspense fallback={<Loader />}>
       <KeyboardControls map={keyboardMap}>
         <Canvas
+          style={{
+            touchAction: "none",
+          }}
           shadows
           camera={{ position: [3, 3, 3], near: 0.1, fov: 40 }}
           onPointerDown={(e) => {
             if (!isMobile()) {
-              // (e.target as HTMLElement).requestPointerLock();
+              (e.target as HTMLElement).requestPointerLock();
             }
           }}
         >
