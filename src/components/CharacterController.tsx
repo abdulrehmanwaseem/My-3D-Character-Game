@@ -18,8 +18,8 @@ const CharacterController = () => {
   const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED, JUMP_FORCE } = useControls(
     "Character Controls",
     {
-      WALK_SPEED: { value: 1.6, min: 0.1, max: 4, step: 0.1 },
-      RUN_SPEED: { value: 2.2, min: 0.2, max: 12, step: 0.1 },
+      WALK_SPEED: { value: 1.8, min: 0.1, max: 4, step: 0.1 },
+      RUN_SPEED: { value: 2.6, min: 0.2, max: 12, step: 0.1 },
       ROTATION_SPEED: {
         value: degToRad(0.5),
         min: degToRad(0.1),
