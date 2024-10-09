@@ -42,7 +42,7 @@ export function CharacterModel({ animation, ...props }: CharacterModelProps) {
     const moveAction = actions["Armature|Take 001|BaseLayer"];
     const idleAction =
       actions["rp_nathan_animated_003_walking|Take 001|BaseLayer"];
-    const FADE_DURATION = 0.2;
+    const FADE_DURATION = 0.25;
     if (animation === "move") {
       idleAction?.fadeOut(FADE_DURATION);
       moveAction?.reset().fadeIn(FADE_DURATION).play();
@@ -51,7 +51,7 @@ export function CharacterModel({ animation, ...props }: CharacterModelProps) {
       moveAction?.fadeOut(FADE_DURATION);
       idleAction?.reset().fadeIn(FADE_DURATION).play();
     }
-    console.log("Animation state:", animation); // For debugging
+    console.log("Current Animation state:", animation); // For debugging
   }, [animation]);
 
   return (
