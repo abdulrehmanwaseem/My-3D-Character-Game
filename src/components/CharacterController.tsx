@@ -7,6 +7,7 @@ import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { lerpAngle } from "../utils/helper.ts";
+import { CharacterModel } from "./My_3d_Character.tsx";
 
 interface Movement {
   x: number;
@@ -45,6 +46,7 @@ const CharacterController = () => {
   const container = useRef<THREE.Group>(null);
   const character = useRef<THREE.Group>(null);
   const [isGrounded, setIsGrounded] = useState(true);
+  const [animation, setAnimation] = useState(false);
 
   const characterRotationTarget = useRef(0);
   const rotationTarget = useRef(0);
@@ -82,12 +84,16 @@ const CharacterController = () => {
         y: 0,
       };
 
+      let isMoving = false;
+
       if (get().forward) {
         movement.z = 1;
+        isMoving = true;
       }
 
       if (get().backward) {
         movement.z = -1;
+        isMoving = true;
       }
 
       let speed = get().run ? RUN_SPEED : WALK_SPEED;
@@ -104,15 +110,15 @@ const CharacterController = () => {
       }
 
       if (get().left) {
+        isMoving = true;
         movement.x = 1;
       }
       if (get().right) {
+        isMoving = true;
         movement.x = -1;
       }
 
       if (Math.abs(vel.y) < 0.1 && !isGrounded) {
-        console.log("t");
-
         setIsGrounded(true);
       }
 
@@ -139,6 +145,8 @@ const CharacterController = () => {
       if (movement.y !== 0) {
         vel.y = JUMP_FORCE;
       }
+
+      setAnimation(isMoving);
 
       if (character.current) {
         character.current.rotation.y = lerpAngle(
@@ -185,7 +193,7 @@ const CharacterController = () => {
         <group ref={cameraPosition} position-y={2} position-z={-4} />
 
         <group ref={character}>
-          <Character scale={0.8} />
+          <CharacterModel animation={animation} scale={0.8} />
         </group>
       </group>
       <CapsuleCollider args={[0.5, 0.23]} position={[0, 0.74, 0]} />

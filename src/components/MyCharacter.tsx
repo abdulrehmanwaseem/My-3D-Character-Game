@@ -24,7 +24,6 @@ type GLTFResult = GLTF & {
   };
   animations: GLTFAction[];
 };
-
 export function Character(props: JSX.IntrinsicElements["group"]) {
   const group = React.useRef<any>();
   const { scene, animations } = useGLTF("/models/3d_character.glb");
@@ -32,16 +31,35 @@ export function Character(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
 
-  // useEffect(() => {
-  //   if (actions && animations.length > 0) {
-  //     const walkAction =
-  //       actions["Armature|Take 001|BaseLayer"];
+  let runAnimation = true;
 
-  //     if (walkAction) {
-  //       walkAction.reset().setLoop(THREE.LoopRepeat, Infinity).play();
-  //     }
-  //   }
-  // }, [actions, animations]);
+  useEffect(() => {
+    if (nodes && runAnimation) {
+      const leftArm = nodes["rp_nathan_animated_003_walking_upperarm_l"];
+      const rightArm = nodes["rp_nathan_animated_003_walking_upperarm_r"];
+
+      let time = 0;
+
+      const animate = () => {
+        if (!runAnimation) return;
+
+        time += 0.03;
+
+        const armSwing = Math.PI / 2.1;
+
+        leftArm.rotation.y = armSwing;
+        rightArm.rotation.y = armSwing;
+
+        requestAnimationFrame(animate);
+      };
+
+      animate();
+    }
+
+    return () => {
+      runAnimation = false;
+    };
+  }, [nodes]);
 
   return (
     <group ref={group} {...props} dispose={null}>
