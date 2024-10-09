@@ -1,14 +1,10 @@
-import {
-  Environment,
-  OrbitControls,
-  OrthographicCamera,
-} from "@react-three/drei";
+import { Environment, OrthographicCamera } from "@react-three/drei";
 import { Perf } from "r3f-perf";
-import { Map } from "./Csgo_dust_2_Map";
 import { useRef } from "react";
 import * as THREE from "three";
 import { Physics } from "@react-three/rapier";
 import CharacterController from "./CharacterController";
+import { DustMap } from "./Csgo_dust_2_Map";
 
 const Scene = () => {
   const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
@@ -36,8 +32,7 @@ const Scene = () => {
         />
       </directionalLight>
       <Physics debug>
-        <Map scale={0.7} position={[-3, 0, 0]} />
-
+        <DustMap scale={0.7} position={[-3, 0, 0]} />
         <CharacterController />
       </Physics>
     </>

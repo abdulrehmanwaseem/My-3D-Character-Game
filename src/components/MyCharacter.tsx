@@ -24,42 +24,37 @@ type GLTFResult = GLTF & {
   };
   animations: GLTFAction[];
 };
-export function Character(props: JSX.IntrinsicElements["group"]) {
-  const group = React.useRef<any>();
-  const { scene, animations } = useGLTF("/models/3d_character.glb");
+
+type CharacterModelProps = {
+  animation: boolean;
+} & JSX.IntrinsicElements["group"];
+
+export function CharacterModel({
+  animation = false,
+  ...props
+}: CharacterModelProps) {
+  const group = React.useRef<THREE.Group>();
+  const { scene, animations } = useGLTF("/models/My_3d_Character.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
 
-  let runAnimation = true;
-
   useEffect(() => {
-    if (nodes && runAnimation) {
-      const leftArm = nodes["rp_nathan_animated_003_walking_upperarm_l"];
-      const rightArm = nodes["rp_nathan_animated_003_walking_upperarm_r"];
-
-      let time = 0;
-
-      const animate = () => {
-        if (!runAnimation) return;
-
-        time += 0.03;
-
-        const armSwing = Math.PI / 2.1;
-
-        leftArm.rotation.y = armSwing;
-        rightArm.rotation.y = armSwing;
-
-        requestAnimationFrame(animate);
-      };
-
-      animate();
+    if (actions) {
+      const action = actions["Armature|Take 001|BaseLayer"];
+      if (animation && action) {
+        action.play();
+      } else if (action) {
+        action.stop();
+      }
     }
 
     return () => {
-      runAnimation = false;
+      if (actions && actions["Armature|Take 001|BaseLayer"]) {
+        actions["Armature|Take 001|BaseLayer"].stop();
+      }
     };
-  }, [nodes]);
+  }, [actions, animation]);
 
   return (
     <group ref={group} {...props} dispose={null}>
@@ -97,4 +92,4 @@ export function Character(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/3d_character.glb");
+useGLTF.preload("/models/My_3d_Character.glb");

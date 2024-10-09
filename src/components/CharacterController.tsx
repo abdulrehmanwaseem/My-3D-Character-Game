@@ -7,7 +7,7 @@ import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { lerpAngle } from "../utils/helper.ts";
-import { CharacterModel } from "./My_3d_Character.tsx";
+import { CharacterModel } from "./MyCharacter.tsx";
 
 interface Movement {
   x: number;
