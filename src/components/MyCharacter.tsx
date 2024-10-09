@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useGraph } from "@react-three/fiber";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { GLTF, SkeletonUtils } from "three-stdlib";
@@ -30,9 +30,9 @@ type CharacterModelProps = {
 } & JSX.IntrinsicElements["group"];
 
 export function CharacterModel({ animation, ...props }: CharacterModelProps) {
-  const group = React.useRef<THREE.Group>();
+  const group = useRef<THREE.Group | null>(null);
   const { scene, animations } = useGLTF("/models/My_3d_Character.glb");
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
 
