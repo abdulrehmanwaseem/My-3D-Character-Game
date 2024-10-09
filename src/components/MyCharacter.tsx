@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useGraph } from "@react-three/fiber";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { GLTF, SkeletonUtils } from "three-stdlib";
@@ -26,13 +26,10 @@ type GLTFResult = GLTF & {
 };
 
 type CharacterModelProps = {
-  animation: boolean;
+  animation: string;
 } & JSX.IntrinsicElements["group"];
 
-export function CharacterModel({
-  animation = false,
-  ...props
-}: CharacterModelProps) {
+export function CharacterModel({ animation, ...props }: CharacterModelProps) {
   const group = React.useRef<THREE.Group>();
   const { scene, animations } = useGLTF("/models/My_3d_Character.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
@@ -40,21 +37,22 @@ export function CharacterModel({
   const { actions } = useAnimations(animations, group);
 
   useEffect(() => {
-    if (actions) {
-      const action = actions["Armature|Take 001|BaseLayer"];
-      if (animation && action) {
-        action.play();
-      } else if (action) {
-        action.stop();
-      }
-    }
+    if (!actions) return;
 
-    return () => {
-      if (actions && actions["Armature|Take 001|BaseLayer"]) {
-        actions["Armature|Take 001|BaseLayer"].stop();
-      }
-    };
-  }, [actions, animation]);
+    const moveAction = actions["Armature|Take 001|BaseLayer"];
+    const idleAction =
+      actions["rp_nathan_animated_003_walking|Take 001|BaseLayer"];
+    const FADE_DURATION = 0.2;
+    if (animation === "move") {
+      idleAction?.fadeOut(FADE_DURATION);
+      moveAction?.reset().fadeIn(FADE_DURATION).play();
+      return;
+    } else if (animation === "idle") {
+      moveAction?.fadeOut(FADE_DURATION);
+      idleAction?.reset().fadeIn(FADE_DURATION).play();
+    }
+    console.log("Animation state:", animation); // For debugging
+  }, [animation]);
 
   return (
     <group ref={group} {...props} dispose={null}>

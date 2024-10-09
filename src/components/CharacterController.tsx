@@ -1,4 +1,3 @@
-import { Character } from "./MyCharacter";
 import { useControls } from "leva";
 import { CapsuleCollider, RigidBody } from "@react-three/rapier";
 import { useEffect, useRef, useState } from "react";
@@ -19,6 +18,8 @@ interface RigidBodyRef {
   linvel: () => { x: number; y: number; z: number };
   setLinvel: (vel: { x: number; y: number; z: number }, wake: boolean) => void;
 }
+
+type AnimationState = "idle" | "move";
 
 const CharacterController = () => {
   // const { positionX, positionY, positionZ } = useControls({
@@ -46,7 +47,7 @@ const CharacterController = () => {
   const container = useRef<THREE.Group>(null);
   const character = useRef<THREE.Group>(null);
   const [isGrounded, setIsGrounded] = useState(true);
-  const [animation, setAnimation] = useState(false);
+  const [animation, setAnimation] = useState<AnimationState>("idle");
 
   const characterRotationTarget = useRef(0);
   const rotationTarget = useRef(0);
@@ -84,16 +85,16 @@ const CharacterController = () => {
         y: 0,
       };
 
-      let isMoving = false;
+      let isMoving = "idle";
 
       if (get().forward) {
         movement.z = 1;
-        isMoving = true;
+        isMoving = "move";
       }
 
       if (get().backward) {
         movement.z = -1;
-        isMoving = true;
+        isMoving = "move";
       }
 
       let speed = get().run ? RUN_SPEED : WALK_SPEED;
@@ -110,11 +111,11 @@ const CharacterController = () => {
       }
 
       if (get().left) {
-        isMoving = true;
+        isMoving = "move";
         movement.x = 1;
       }
       if (get().right) {
-        isMoving = true;
+        isMoving = "move";
         movement.x = -1;
       }
 
@@ -196,7 +197,7 @@ const CharacterController = () => {
           <CharacterModel animation={animation} scale={0.8} />
         </group>
       </group>
-      <CapsuleCollider args={[0.5, 0.23]} position={[0, 0.74, 0]} />
+      <CapsuleCollider args={[0.49, 0.22]} position={[0, 0.7, 0]} />
     </RigidBody>
   );
 };

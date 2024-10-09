@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { useAnimations, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
 import { useEffect, useRef } from "react";
 import { RigidBody } from "@react-three/rapier";
@@ -35,12 +35,9 @@ type GLTFResult = GLTF & {
 };
 
 export function DustMap(props: JSX.IntrinsicElements["group"]) {
-  const { scene, animations } = useGLTF(
-    "/models/Csgo_Dust_2.glb"
-  ) as GLTFResult;
+  const { scene } = useGLTF("/models/Csgo_Dust_2.glb") as GLTFResult;
 
   const group = useRef();
-  const { actions } = useAnimations(animations, group);
 
   useEffect(() => {
     scene.traverse((child) => {
@@ -51,12 +48,6 @@ export function DustMap(props: JSX.IntrinsicElements["group"]) {
       }
     });
   }, [scene]);
-
-  useEffect(() => {
-    if (actions && animations.length > 0) {
-      actions[animations[0].name]?.play();
-    }
-  }, [actions, animations]);
 
   return (
     <group>
