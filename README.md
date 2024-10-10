@@ -41,20 +41,14 @@ To set up the project locally, follow these steps:
    ```bash
    git clone https://github.com/abdulrehman-code/My-3D-Character-Game.git
    ```
-   
-2. **Navigate to the project directory:**
 
-   ```bash
-   cd My-3D-Character-Game
-   ```
-
-3. **Install dependencies:**
+2. **Install dependencies:**
 
    ```bash
    npm install
    ```
 
-4. **Run the application:**
+3. **Run the application:**
 
    ```bash
    npm run dev
