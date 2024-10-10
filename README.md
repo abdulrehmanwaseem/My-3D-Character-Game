@@ -1,50 +1,94 @@
-# React + TypeScript + Vite
+# My 3D Character Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![My 3D Character Game](https://res.cloudinary.com/dgljsrfmk/image/upload/v1728549141/oymdiwdncara9tzw9yxb.png)
 
-Currently, two official plugins are available:
+This project features my personal 3D face model as the main character, set in a recreation of the iconic CS:GO Dust map. The game provides a custom third-person controller and camera view, creating an immersive and personalized gaming experience that blends familiar game environments with unique character design.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Technologies Used
 
-## Expanding the ESLint configuration
+- **Frontend:** React, React-Three-Fiber
+- **3D Rendering:** Three.js
+- **Physics Engine:** React-Three/Rapier
+- **Additional Tools:** React Drei (utility components for Three.js)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Table of Contents
 
-- Configure the top-level `parserOptions` property like this:
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Development](#development)
+- [Build](#build)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Features
+
+- **Custom 3D Character:** The main character is modeled with my own 3D face, offering a personal touch.
+- **Third-Person Controller & Camera:** A smooth, customized third-person view with full control of movement.
+- **Recreated CS:GO Dust Map:** Explore a faithfully recreated version of the Dust map, providing nostalgic gameplay.
+- **Real-Time Physics:** Powered by React-Three/Rapier, enabling realistic physical interactions in the game world.
+- **Immersive 3D Environment:** Built with React-Three-Fiber and Three.js for high-quality 3D rendering and interactivity.
+- **Responsive Design:** Optimized to run smoothly across different devices and screen sizes.
+- **Mobile Touch Support:** The game is optimized for touch controls on mobile devices, providing a seamless experience on tablets and smartphones.
+
+## Installation
+
+To set up the project locally, follow these steps:
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/abdulrehman-code/My-3D-Character-Game.git
+   ```
+   
+2. **Navigate to the project directory:**
+
+   ```bash
+   cd My-3D-Character-Game
+   ```
+
+3. **Install dependencies:**
+
+   ```bash
+   npm install
+   ```
+
+4. **Run the application:**
+
+   ```bash
+   npm run dev
+   ```
+
+## Usage
+
+- Open your browser and navigate to `http://localhost:5173` to launch the game.
+- Use the third-person controller to navigate the map and explore the environment.
+
+## Development
+
+To run the game in development mode:
+
+```bash
+npm run dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Build
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+To build the project for production:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+npm run build
 ```
+
+## Contributing
+
+Contributions are welcome! Please submit a pull request if you'd like to enhance the game or add new features.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For any questions or issues, feel free to contact [Abdul Rehman](mailto:abdulrehman.code1@gmail.com).
