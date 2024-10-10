@@ -22,12 +22,6 @@ interface RigidBodyRef {
 type AnimationState = "idle" | "move";
 
 const CharacterController = () => {
-  // const { positionX, positionY, positionZ } = useControls({
-  //   positionX: { value: 3, min: -10, max: 10, step: 0.1 },
-  //   positionY: { value: 0, min: -10, max: 10, step: 0.1 },
-  //   positionZ: { value: 0, min: -10, max: 10, step: 0.1 },
-  // });
-
   const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED, JUMP_FORCE } = useControls(
     "Character Controls",
     {

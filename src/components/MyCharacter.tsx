@@ -51,7 +51,6 @@ export function CharacterModel({ animation, ...props }: CharacterModelProps) {
       moveAction?.fadeOut(FADE_DURATION);
       idleAction?.reset().fadeIn(FADE_DURATION).play();
     }
-    console.log("Current Animation state:", animation); // For debugging
   }, [animation]);
 
   return (
