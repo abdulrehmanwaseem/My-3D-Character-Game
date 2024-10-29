@@ -7,6 +7,7 @@ import { useKeyboardControls } from "@react-three/drei";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { lerpAngle } from "../utils/helper.ts";
 import { CharacterModel } from "./MyCharacter.tsx";
+import { Model } from "./MY-3D-Character-IDLE.tsx";
 
 interface Movement {
   x: number;
@@ -188,10 +189,10 @@ const CharacterController = () => {
         <group ref={cameraPosition} position-y={2} position-z={-4} />
 
         <group ref={character}>
-          <CharacterModel animation={animation} scale={0.8} />
+          <Model animation={animation} scale={0.8} />
         </group>
       </group>
-      <CapsuleCollider args={[0.49, 0.22]} position={[0, 0.7, 0]} />
+      <CapsuleCollider args={[0.49, 0.21]} position={[0, 0.7, 0]} />
     </RigidBody>
   );
 };

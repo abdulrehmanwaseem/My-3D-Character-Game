@@ -42,7 +42,7 @@ const Scene = () => {
           ref={shadowCameraRef}
         />
       </directionalLight>
-      <Physics>
+      <Physics debug>
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
         <CharacterController />
       </Physics>
