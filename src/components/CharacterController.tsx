@@ -1,7 +1,7 @@
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { CapsuleCollider, RigidBody } from "@react-three/rapier";
-import { useControls } from "leva";
+// import { useControls } from "leva";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { degToRad } from "three/src/math/MathUtils.js";
@@ -24,8 +24,8 @@ interface RigidBodyRef {
 type AnimationState = "idle" | "move";
 
 const CharacterController = () => {
-  const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED, JUMP_FORCE } = useControls(
-    "Character Controls",
+  const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED, JUMP_FORCE } =
+    ("Character Controls",
     {
       WALK_SPEED: { value: 2, min: 0.1, max: 4, step: 0.1 },
       RUN_SPEED: { value: 3, min: 0.2, max: 12, step: 0.1 },
@@ -36,8 +36,7 @@ const CharacterController = () => {
         step: degToRad(0.1),
       },
       JUMP_FORCE: { value: 3.5, min: 1, max: 8, step: 0.1 },
-    }
-  );
+    });
 
   const rigidBody = useRef<RigidBodyRef | null>();
   const container = useRef<THREE.Group>(null);
