@@ -35,7 +35,7 @@ const App = () => {
         </Canvas>
       </KeyboardControls>
       <img
-        className="absolute bg-slate-900 p-5 w-60 rounded-xl left-5 bottom-5 select-none lg:block hidden"
+        className="absolute hidden p-5 select-none bg-slate-900 w-60 rounded-xl left-5 bottom-5 lg:block"
         src="/images/controls.png"
         alt="control keys"
       />

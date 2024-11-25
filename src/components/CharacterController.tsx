@@ -29,15 +29,15 @@ const CharacterController = () => {
   const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED, JUMP_FORCE } = useControls(
     "Character Controls",
     {
-      WALK_SPEED: { value: 1.8, min: 0.1, max: 4, step: 0.1 },
-      RUN_SPEED: { value: 2.6, min: 0.2, max: 12, step: 0.1 },
+      WALK_SPEED: { value: 2, min: 0.1, max: 4, step: 0.1 },
+      RUN_SPEED: { value: 3, min: 0.2, max: 12, step: 0.1 },
       ROTATION_SPEED: {
         value: degToRad(0.5),
         min: degToRad(0.1),
         max: degToRad(5),
         step: degToRad(0.1),
       },
-      JUMP_FORCE: { value: 3.8, min: 1, max: 8, step: 0.1 },
+      JUMP_FORCE: { value: 3.5, min: 1, max: 8, step: 0.1 },
     }
   );
 
@@ -199,13 +199,13 @@ const CharacterController = () => {
     >
       <group ref={container}>
         <group ref={cameraTarget} position-z={1.5} />
-        <group ref={cameraPosition} position-y={1} position-z={-3} />
+        <group ref={cameraPosition} position-y={2} position-z={-3} />
 
         <group ref={character}>
           <MyCharacterModel animation={animation} scale={0.8} />
         </group>
       </group>
-      <CapsuleCollider args={[0.49, 0.21]} position={[0, 0.7, 0]} />
+      <CapsuleCollider args={[0.5, 0.26]} position={[0, 0.75, 0]} />
     </RigidBody>
   );
 };
