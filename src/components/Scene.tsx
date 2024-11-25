@@ -9,7 +9,7 @@ import * as THREE from "three";
 import { Physics } from "@react-three/rapier";
 import CharacterController from "./CharacterController";
 import { useControls } from "leva";
-import { DustMap } from "./Csgo_Dust_2_Map";
+import { DustMap } from "./Csgo_Dust_Map";
 
 const Scene = () => {
   const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
