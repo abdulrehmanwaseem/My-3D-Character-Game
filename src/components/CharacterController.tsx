@@ -1,15 +1,13 @@
-import { useControls } from "leva";
+import { useKeyboardControls } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import { CapsuleCollider, RigidBody } from "@react-three/rapier";
+import { useControls } from "leva";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
-import { useKeyboardControls } from "@react-three/drei";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { lerpAngle } from "../utils/helper.ts";
 // import { CharacterModel } from "./MyCharacter.tsx";
 // import { Model } from "./MY-3D-Character-IDLE.tsx";
-import { Model2 } from "./FINAL2.tsx";
-import { CharacterModel } from "./MyCharacter.tsx";
 import { MyCharacterModel } from "./My_3D_Character.tsx";
 
 interface Movement {
@@ -92,7 +90,7 @@ const CharacterController = () => {
         y: 0,
       };
 
-      let isMoving = "idle";
+      let isMoving: AnimationState = "idle";
 
       if (get().forward) {
         movement.z = 1;
