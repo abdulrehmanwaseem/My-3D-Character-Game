@@ -8,21 +8,24 @@ import { useRef } from "react";
 import * as THREE from "three";
 import { Physics } from "@react-three/rapier";
 import CharacterController from "./CharacterController";
-// import { useControls } from "leva";
+import { useControls } from "leva";
 import { DustMap } from "./Csgo_Dust_Map";
 
 const Scene = () => {
   const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
-
-  const { positionX, positionY, positionZ } = {
-    positionX: { value: -14, min: -500, max: 500, step: 0.5 },
-    positionY: { value: 0, min: -500, max: 500, step: 0.5 },
-    positionZ: { value: 29.5, min: -500, max: 500, step: 0.5 },
-  };
+  const { positionX, positionY, positionZ } = useControls(
+    "Position Controls",
+    {
+      positionX: { value: -14, min: -500, max: 500, step: 0.5 },
+      positionY: { value: 0, min: -500, max: 500, step: 0.5 },
+      positionZ: { value: 29.5, min: -500, max: 500, step: 0.5 },
+    },
+    { collapsed: true }
+  );
 
   return (
     <>
-      <Perf minimal={true} />
+      <Perf minimal={true} position="top-left" />
       <OrbitControls maxPolarAngle={Math.PI / 2} />
       <Environment preset="sunset" />
       <directionalLight
