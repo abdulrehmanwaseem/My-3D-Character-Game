@@ -6,8 +6,10 @@ import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { lerpAngle } from "../utils/helper.ts";
+// import { CharacterModel } from "./MyCharacter.tsx";
+// import { Model } from "./MY-3D-Character-IDLE.tsx";
+import { Model2 } from "./FINAL2.tsx";
 import { CharacterModel } from "./MyCharacter.tsx";
-import { Model } from "./MY-3D-Character-IDLE.tsx";
 
 interface Movement {
   x: number;
@@ -74,6 +76,15 @@ const CharacterController = () => {
     if (rigidBody.current) {
       const vel = rigidBody.current?.linvel();
 
+      if (Math.abs(vel.y) < 0.1) {
+        setIsGrounded(true);
+      } else {
+        setIsGrounded(false);
+      }
+
+      const inAir = Math.abs(vel.y) > 0.1;
+      setIsGrounded(!inAir);
+
       const movement: Movement = {
         x: 0,
         z: 0,
@@ -118,10 +129,11 @@ const CharacterController = () => {
         setIsGrounded(true);
       }
 
-      if (get().jump && isGrounded) {
-        console.log("Jump triggered");
-        movement.y = JUMP_FORCE;
-        setIsGrounded(false);
+      if (get().jump && !inAir) {
+        if (isGrounded) {
+          movement.y = JUMP_FORCE;
+          setIsGrounded(false);
+        }
       }
 
       if (movement.x !== 0) {
@@ -189,7 +201,11 @@ const CharacterController = () => {
         <group ref={cameraPosition} position-y={2} position-z={-4} />
 
         <group ref={character}>
-          <Model animation={animation} scale={0.8} />
+          <CharacterModel
+            playerName="Abdul Rehman"
+            animation={animation}
+            scale={0.8}
+          />
         </group>
       </group>
       <CapsuleCollider args={[0.49, 0.21]} position={[0, 0.7, 0]} />

@@ -42,12 +42,11 @@ export function DustMap(props: JSX.IntrinsicElements["group"]) {
   useEffect(() => {
     scene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
-        const mesh = child as THREE.Mesh;
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
+        child.castShadow = true;
+        child.receiveShadow = true;
       }
     });
-  }, [scene]);
+  });
 
   return (
     <group>

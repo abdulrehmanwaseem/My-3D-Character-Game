@@ -1,4 +1,4 @@
-import { KeyboardControls, Loader } from "@react-three/drei";
+import { KeyboardControls, Loader, SoftShadows } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 import Scene from "./components/Scene";
@@ -30,11 +30,12 @@ const App = () => {
             }
           }}
         >
+          <SoftShadows size={42} />
           <Scene />
         </Canvas>
       </KeyboardControls>
       <img
-        className="absolute w-48 left-5 bottom-5 select-none lg:block hidden"
+        className="absolute bg-slate-900 p-5 w-60 rounded-xl left-5 bottom-5 select-none lg:block hidden"
         src="/images/controls.png"
         alt="control keys"
       />

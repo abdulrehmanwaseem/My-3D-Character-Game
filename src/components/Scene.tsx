@@ -44,6 +44,7 @@ const Scene = () => {
       </directionalLight>
       <Physics debug>
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
+
         <CharacterController />
       </Physics>
     </>
