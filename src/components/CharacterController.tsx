@@ -10,6 +10,7 @@ import { lerpAngle } from "../utils/helper.ts";
 // import { Model } from "./MY-3D-Character-IDLE.tsx";
 import { Model2 } from "./FINAL2.tsx";
 import { CharacterModel } from "./MyCharacter.tsx";
+import { MyCharacterModel } from "./My_3D_Character.tsx";
 
 interface Movement {
   x: number;
@@ -198,14 +199,10 @@ const CharacterController = () => {
     >
       <group ref={container}>
         <group ref={cameraTarget} position-z={1.5} />
-        <group ref={cameraPosition} position-y={2} position-z={-4} />
+        <group ref={cameraPosition} position-y={1} position-z={-3} />
 
         <group ref={character}>
-          <CharacterModel
-            playerName="Abdul Rehman"
-            animation={animation}
-            scale={0.8}
-          />
+          <MyCharacterModel animation={animation} scale={0.8} />
         </group>
       </group>
       <CapsuleCollider args={[0.49, 0.21]} position={[0, 0.7, 0]} />
