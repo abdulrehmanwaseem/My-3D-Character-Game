@@ -8,7 +8,7 @@ import { degToRad } from "three/src/math/MathUtils.js";
 import { lerpAngle } from "../utils/helper.ts";
 // import { CharacterModel } from "./MyCharacter.tsx";
 // import { Model } from "./MY-3D-Character-IDLE.tsx";
-import { MyCharacterModel } from "./My_3D_Character.tsx";
+import { MyCharacterModel } from "./My_Character.tsx";
 
 interface Movement {
   x: number;
