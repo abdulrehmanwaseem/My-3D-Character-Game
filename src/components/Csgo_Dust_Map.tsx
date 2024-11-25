@@ -35,7 +35,7 @@ type GLTFResult = GLTF & {
 };
 
 export function DustMap(props: JSX.IntrinsicElements["group"]) {
-  const { scene } = useGLTF("/models/Csgo_Dust_2.glb") as GLTFResult;
+  const { scene } = useGLTF("/models/Csgo_Dust_Map.glb") as GLTFResult;
 
   const group = useRef();
 
@@ -57,4 +57,4 @@ export function DustMap(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("/models/Csgo_Dust_2.glb");
+useGLTF.preload("/models/Csgo_Dust_Map.glb");
