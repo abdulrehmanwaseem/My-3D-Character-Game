@@ -25,8 +25,6 @@ export default function Car(props: JSX.IntrinsicElements["group"]) {
     "https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/zombie-car/model.gltf"
   ) as GLTFResult;
 
-  console.log(group, nodes);
-
   useFrame((state, delta) => {
     if (group.current) {
       group.current.position.z += delta * 0.5; // Adjust speed with delta
