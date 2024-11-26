@@ -6,10 +6,12 @@ import {
 import { Perf } from "r3f-perf";
 import { useRef } from "react";
 import * as THREE from "three";
-import { Physics } from "@react-three/rapier";
+import { Physics, RigidBody } from "@react-three/rapier";
 import CharacterController from "./CharacterController";
 import { useControls } from "leva";
 import { DustMap } from "./Csgo_Dust_Map";
+import Car from "./Car";
+import Zombie from "./Zombie";
 
 const Scene = () => {
   const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
@@ -26,7 +28,7 @@ const Scene = () => {
   return (
     <>
       <Perf minimal={true} position="top-left" />
-      <OrbitControls maxPolarAngle={Math.PI / 2} />
+      <OrbitControls autoRotate maxPolarAngle={Math.PI / 2} />
       <Environment preset="sunset" />
       <directionalLight
         intensity={0.7}
@@ -47,7 +49,10 @@ const Scene = () => {
       </directionalLight>
       <Physics>
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
-
+        <RigidBody colliders="trimesh" lockRotations position={[4, 6, 4]}>
+          <Car scale={1} />
+          <Zombie position={[0, 0, 2]} rotation={[0, 3.5, 0]} scale={0.5} />
+        </RigidBody>
         <CharacterController />
       </Physics>
     </>
