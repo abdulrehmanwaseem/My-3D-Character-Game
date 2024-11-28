@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { useEffect, useMemo, useRef } from "react";
 import { useGraph } from "@react-three/fiber";
-import { useGLTF, useAnimations } from "@react-three/drei";
+import { useAnimations, useGLTF } from "@react-three/drei";
 import { GLTF, SkeletonUtils } from "three-stdlib";
 
 type ActionName =
@@ -63,6 +63,15 @@ export function MyCharacterModel({ animation, ...props }: CharacterModelProps) {
       idleAction?.reset().fadeIn(FADE_DURATION).play();
     }
   }, [animation]);
+  const animationNames = animations.map((clip) => clip.name);
+  console.log(animationNames);
+
+  // useEffect(() => {
+  //   Object.values(materials).forEach((material) => {
+  //     material.needsUpdate = true;
+  //     material.toneMapped = false;
+  //   });
+  // }, [materials]);
 
   return (
     <group ref={group} {...props} dispose={null}>
@@ -74,12 +83,16 @@ export function MyCharacterModel({ animation, ...props }: CharacterModelProps) {
             geometry={nodes.Body.geometry}
             material={materials.rp_nathan_animated_003_mat}
             skeleton={nodes.Body.skeleton}
+            castShadow
+            receiveShadow
           />
           <skinnedMesh
             name="Mesh_0"
             geometry={nodes.Mesh_0.geometry}
             material={materials["Material_0.002"]}
             skeleton={nodes.Mesh_0.skeleton}
+            castShadow
+            receiveShadow
           />
         </group>
       </group>

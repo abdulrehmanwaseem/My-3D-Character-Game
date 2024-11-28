@@ -49,7 +49,7 @@ export function DustMap(props: JSX.IntrinsicElements["group"]) {
   });
 
   return (
-    <group>
+    <group castShadow receiveShadow>
       <RigidBody type="fixed" colliders="trimesh">
         <primitive {...props} object={scene} ref={group} />
       </RigidBody>
