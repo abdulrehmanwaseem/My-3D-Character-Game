@@ -15,6 +15,8 @@ import Ecctrl, { EcctrlAnimation } from "ecctrl";
 
 const Scene = ({ cameraMode }) => {
   const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
+  const characterURL = "/models/My_Character.glb"; // Adjust to your model path
+
   const { positionX, positionY, positionZ } = useControls(
     "Position Controls",
     {
@@ -24,8 +26,6 @@ const Scene = ({ cameraMode }) => {
     },
     { collapsed: true }
   );
-
-  const characterURL = "/models/My_Character.glb"; // Adjust to your model path
 
   const keyboardMap = [
     { name: "forward", keys: ["ArrowUp", "KeyW"] },
@@ -46,38 +46,6 @@ const Scene = ({ cameraMode }) => {
     air: "Target.001|Target|Action.001",
     landing: "Target.001|Target|Armature|Take 001|BaseLayer.001_Target.001",
   };
-
-  const cameraConfig = {
-    firstPerson: {
-      camCollision: false,
-      camInitDis: 0.0001,
-      camMinDis: 0.0001,
-      camMaxDis: 0.0001,
-      camFollowMult: 1000,
-      camLerpMult: 1000,
-      turnVelMultiplier: 1,
-      turnSpeed: 100,
-      mode: "CameraBasedMovement",
-    },
-    thirdPerson: {
-      camInitDis: -4,
-      camMaxDis: -6,
-      camMinDis: -1,
-      camUpLimit: 1.2,
-      camLowLimit: -0.8,
-    },
-  };
-
-  // useEffect(() => {
-  //   if (ecctrlRef.current) {
-  //     // Update the component based on the new cameraMode
-  //     ecctrlRef.current.updateConfig(
-  //       cameraMode === "first-person"
-  //         ? cameraConfig.firstPerson
-  //         : cameraConfig.thirdPerson
-  //     );
-  //   }
-  // }, [cameraMode]);
 
   return (
     <>
@@ -101,37 +69,36 @@ const Scene = ({ cameraMode }) => {
           ref={shadowCameraRef}
         />
       </directionalLight>
-      <Physics timeStep="vary">
+      <Physics debug timeStep="vary">
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
-        {/* <RigidBody colliders="trimesh" lockRotations position={[4, 6, 4]}>
-          <Car scale={1} />
-          <Zombie position={[0, 0, 2]} rotation={[0, 3.5, 0]} scale={0.5} />
-        </RigidBody> */}
         {/* <CharacterController /> */}
         <Suspense fallback={null}>
           <KeyboardControls map={keyboardMap}>
-            {/* Character Control */}
-
             <Ecctrl
               key={cameraMode}
               debug
-              position={[0, 15, 0]}
-              capsuleHalfHeight={0.5}
+              position={[0, 10, 0]}
+              capsuleHalfHeight={0.55}
               capsuleRadius={0.3}
-              floatHeight={0}
+              floatHeight={0.2}
               jumpVel={3}
-              {...(cameraMode === "first-person"
-                ? cameraConfig.firstPerson
-                : cameraConfig.thirdPerson)}
+              moveImpulsePointY={0}
+              // Auto-balance adjustments
+              autoBalanceSpringK={0.7}
+              autoBalanceDampingC={0.08}
+              // Slope handling
+              slopeMaxAngle={0.8}
+              slopeUpExtraForce={0.05}
+              slopeDownExtraForce={0.1}
+              // Camera settings
+              camInitDis={-4}
+              camMaxDis={-6}
+              camMinDis={-1}
+              camUpLimit={1.2}
+              camLowLimit={-0.8}
+              camInitDir={{ x: 0.2, y: 0 }}
             >
-              <MyCharacterModel
-                animation="move"
-                position={[
-                  0, // x position
-                  -0.8, // y position
-                  cameraMode === "first-person" ? -0.5 : 0, // z position
-                ]}
-              />
+              <MyCharacterModel animation="idle" position={[0, -0.95, 0]} />
             </Ecctrl>
           </KeyboardControls>
         </Suspense>

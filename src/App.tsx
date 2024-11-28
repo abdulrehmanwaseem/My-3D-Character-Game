@@ -1,16 +1,7 @@
-import { KeyboardControls, Loader, SoftShadows } from "@react-three/drei";
+import { KeyboardControls, Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useState } from "react";
 import Scene from "./components/Scene";
-
-const keyboardMap = [
-  { name: "forward", keys: ["ArrowUp", "KeyW"] },
-  { name: "backward", keys: ["ArrowDown", "KeyS"] },
-  { name: "left", keys: ["ArrowLeft", "KeyA"] },
-  { name: "right", keys: ["ArrowRight", "KeyD"] },
-  { name: "jump", keys: ["Space"] },
-  { name: "run", keys: ["Shift"] },
-];
 
 type CameraMode = "third-person" | "first-person";
 
@@ -21,7 +12,7 @@ const App = () => {
   return (
     <Suspense fallback={<Loader />}>
       {/* Camera Toggle Switch */}
-      <div className="absolute top-5 right-5 z-10 w-[9.5rem] flex items-center gap-3 bg-slate-800/80 p-3 rounded-lg backdrop-blur-sm">
+      <div className="absolute z-10 top-4 right-4 w-[9.5rem] flex items-center gap-3 bg-slate-800/80 p-3 rounded-lg backdrop-blur-sm">
         <span className="text-sm font-medium text-white">
           {cameraMode === "third-person" ? "3rd Person" : "1st Person"}
         </span>
@@ -45,25 +36,22 @@ const App = () => {
         </button>
       </div>
 
-      <KeyboardControls map={keyboardMap}>
-        <Canvas
-          style={{
-            touchAction: "none",
-          }}
-          shadows
-          camera={{ position: [3, 3, 3], near: 0.1, fov: 40 }}
-          onPointerDown={(e) => {
-            if (!isMobile()) {
-              (e.target as HTMLElement).requestPointerLock();
-            }
-          }}
-        >
-          <SoftShadows size={42} />
-          <Scene cameraMode={cameraMode} />
-        </Canvas>
-      </KeyboardControls>
+      <Canvas
+        style={{
+          touchAction: "none",
+        }}
+        shadows
+        camera={{ position: [3, 3, 3], near: 0.1, fov: 40 }}
+        onPointerDown={(e) => {
+          if (!isMobile()) {
+            (e.target as HTMLElement).requestPointerLock();
+          }
+        }}
+      >
+        <Scene cameraMode={cameraMode} />
+      </Canvas>
       <img
-        className="absolute hidden p-5 select-none bg-slate-900 w-60 rounded-xl left-5 bottom-5 lg:block"
+        className="absolute hidden select-none lg:p-5 bg-slate-800/80 backdrop-blur-sm lg:w-60 md:w-40 md:p-3 rounded-xl left-5 bottom-5 md:block"
         src="/images/controls.png"
         alt="control keys"
       />
