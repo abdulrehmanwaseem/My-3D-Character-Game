@@ -5,17 +5,18 @@ import {
   OrthographicCamera,
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
-import { Suspense, useRef } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Physics } from "@react-three/rapier";
 import { useControls } from "leva";
 import { DustMap } from "./Csgo_Dust_Map";
 import { MyCharacterModel } from "./My_Character";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
+import type { EcctrlAnimationType } from "ecctrl";
 
 const Scene = ({ cameraMode }) => {
   const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
-  const characterURL = "/models/My_Character.glb"; // Adjust to your model path
+  const characterURL: string = "/models/My_Character.glb"; // Adjust to your model path
 
   const { positionX, positionY, positionZ } = useControls(
     "Position Controls",
@@ -34,22 +35,23 @@ const Scene = ({ cameraMode }) => {
     { name: "rightward", keys: ["ArrowRight", "KeyD"] },
     { name: "jump", keys: ["Space"] },
     { name: "run", keys: ["Shift"] },
-    // // Optional animation key map
+    // // Optional animation key maps
     // { name: "action1", keys: ["1"] },
   ];
 
-  const animationSet: EcctrlAnimation = {
-    idle: "Target.001|Target|Armature|Take 001|BaseLayer.001",
-    walk: "Target.001|Target|Armature|Take 001|BaseLayer.001 Retarget",
-    run: "Target.001|Target|Armature|Take 001|BaseLayer.001 Retarget.001",
-    jump: "Target.001|Target|Action",
-    air: "Target.001|Target|Action.001",
-    landing: "Target.001|Target|Armature|Take 001|BaseLayer.001_Target.001",
+  const animationSet: EcctrlAnimationType = {
+    idle: "",
+    walk: "Armature|Take 001|BaseLayer.001 Retarget",
+    run: "Armature|Take 001|BaseLayer.001 Retarget",
+    jump: "",
+    jumpIdle: "Armature|Take 001|BaseLayer.001 Retarget",
+    jumpLand: "",
+    fall: "",
   };
 
   return (
     <>
-      <Perf minimal={true} position="top-left" />
+      <Perf minimal position="top-left" />
       <OrbitControls autoRotate maxPolarAngle={Math.PI / 2} />
       <Environment preset="sunset" />
       <directionalLight
@@ -76,6 +78,7 @@ const Scene = ({ cameraMode }) => {
           <KeyboardControls map={keyboardMap}>
             <Ecctrl
               key={cameraMode}
+              animated
               debug
               position={[0, 10, 0]}
               capsuleHalfHeight={0.55}
@@ -98,7 +101,13 @@ const Scene = ({ cameraMode }) => {
               camLowLimit={-0.8}
               camInitDir={{ x: 0.2, y: 0 }}
             >
-              <MyCharacterModel animation="idle" position={[0, -0.95, 0]} />
+              <EcctrlAnimation
+                characterURL={characterURL}
+                animationSet={animationSet}
+                key={cameraMode}
+              >
+                <MyCharacterModel animation="idle" position={[0, -0.95, 0]} />
+              </EcctrlAnimation>
             </Ecctrl>
           </KeyboardControls>
         </Suspense>

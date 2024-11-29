@@ -47,31 +47,31 @@ export function MyCharacterModel({ animation, ...props }: CharacterModelProps) {
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
 
+  // useEffect(() => {
+  //   if (!actions) return;
+
+  //   const moveAction = actions["Armature|Take 001|BaseLayer.001 Retarget"];
+  //   const idleAction =
+  //     actions["rp_nathan_animated_003_walking|Take 001|BaseLayer"];
+  //   const FADE_DURATION = 0.25;
+  //   if (animation === "move") {
+  //     idleAction?.fadeOut(FADE_DURATION);
+  //     moveAction?.reset().fadeIn(FADE_DURATION).play();
+  //     return;
+  //   } else if (animation === "idle") {
+  //     moveAction?.fadeOut(FADE_DURATION);
+  //     idleAction?.reset().fadeIn(FADE_DURATION).play();
+  //   }
+  // }, [animation]);
+
   useEffect(() => {
     if (!actions) return;
 
-    const moveAction = actions["Armature|Take 001|BaseLayer.001 Retarget"];
     const idleAction =
       actions["rp_nathan_animated_003_walking|Take 001|BaseLayer"];
-    const FADE_DURATION = 0.25;
-    if (animation === "move") {
-      idleAction?.fadeOut(FADE_DURATION);
-      moveAction?.reset().fadeIn(FADE_DURATION).play();
-      return;
-    } else if (animation === "idle") {
-      moveAction?.fadeOut(FADE_DURATION);
-      idleAction?.reset().fadeIn(FADE_DURATION).play();
-    }
-  }, [animation]);
-  const animationNames = animations.map((clip) => clip.name);
-  console.log(animationNames);
 
-  // useEffect(() => {
-  //   Object.values(materials).forEach((material) => {
-  //     material.needsUpdate = true;
-  //     material.toneMapped = false;
-  //   });
-  // }, [materials]);
+    idleAction?.play();
+  }, [animation, actions]);
 
   return (
     <group ref={group} {...props} dispose={null}>
