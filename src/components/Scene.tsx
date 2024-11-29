@@ -71,7 +71,7 @@ const Scene = ({ cameraMode }) => {
           ref={shadowCameraRef}
         />
       </directionalLight>
-      <Physics debug timeStep="vary">
+      <Physics timeStep="vary">
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
         {/* <CharacterController /> */}
         <Suspense fallback={null}>

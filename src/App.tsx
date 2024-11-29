@@ -12,7 +12,7 @@ const App = () => {
 
   return (
     <>
-      <EcctrlJoystick buttonNumber={5} />
+      {isMobile() && <EcctrlJoystick buttonNumber={5} />}
       <Suspense fallback={<Loader />}>
         {/* Camera Toggle Switch */}
         <div className="absolute z-10 top-4 right-4 w-[9.5rem] flex items-center gap-3 bg-slate-800/80 p-3 rounded-lg backdrop-blur-sm">
