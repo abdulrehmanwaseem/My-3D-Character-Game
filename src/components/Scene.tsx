@@ -1,8 +1,10 @@
 import {
+  Cloud,
   Environment,
   KeyboardControls,
   OrbitControls,
   OrthographicCamera,
+  Stars,
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import { Suspense, useRef } from "react";
@@ -53,8 +55,23 @@ const Scene = ({ cameraMode }: SceneProps) => {
       <OrbitControls autoRotate maxPolarAngle={Math.PI / 2} />
 
       {/* environment and ambient light */}
-      <Environment preset="sunset" blur={0.5} />
+      <Environment preset="sunset" />
       <ambientLight intensity={0.5} />
+
+      {/* Clouds in the sky */}
+      <Cloud position={[0, 10, 20]} speed={0.5} opacity={0.8} color="#d3d3d3" />
+      <Cloud
+        position={[-20, 15, 30]}
+        speed={0.3}
+        opacity={0.7}
+        color="#c0c0c0"
+      />
+      <Cloud
+        position={[-40, 15, 45]}
+        speed={0.4}
+        opacity={0.6}
+        color="#bfbfbf"
+      />
 
       <directionalLight
         intensity={1.5}
