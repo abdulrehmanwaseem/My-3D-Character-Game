@@ -5,16 +5,16 @@ import {
   OrthographicCamera,
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useRef } from "react";
 import * as THREE from "three";
 import { Physics } from "@react-three/rapier";
 import { useControls } from "leva";
 import { DustMap } from "./Csgo_Dust_Map";
 import { MyCharacterModel } from "./My_Character";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
-import type { EcctrlAnimationType } from "ecctrl";
+import { AnimationSet, KeyboardControl, SceneProps } from "../types";
 
-const Scene = ({ cameraMode }) => {
+const Scene = ({ cameraMode }: SceneProps) => {
   const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
   const characterURL: string = "/models/My_Character.glb"; // Adjust to your model path
 
@@ -28,18 +28,16 @@ const Scene = ({ cameraMode }) => {
     { collapsed: true }
   );
 
-  const keyboardMap = [
+  const keyboardMap: KeyboardControl[] = [
     { name: "forward", keys: ["ArrowUp", "KeyW"] },
     { name: "backward", keys: ["ArrowDown", "KeyS"] },
     { name: "leftward", keys: ["ArrowLeft", "KeyA"] },
     { name: "rightward", keys: ["ArrowRight", "KeyD"] },
     { name: "jump", keys: ["Space"] },
     { name: "run", keys: ["Shift"] },
-    // // Optional animation key maps
-    // { name: "action1", keys: ["1"] },
   ];
 
-  const animationSet: EcctrlAnimationType = {
+  const animationSet: AnimationSet = {
     idle: "",
     walk: "Armature|Take 001|BaseLayer.001 Retarget",
     run: "Armature|Take 001|BaseLayer.001 Retarget",
@@ -94,19 +92,40 @@ const Scene = ({ cameraMode }) => {
               slopeUpExtraForce={0.05}
               slopeDownExtraForce={0.1}
               // Camera settings
-              camInitDis={-4}
-              camMaxDis={-6}
-              camMinDis={-1}
-              camUpLimit={1.2}
-              camLowLimit={-0.8}
-              camInitDir={{ x: 0.2, y: 0 }}
+              {...(cameraMode === "first-person"
+                ? {
+                    camCollision: false,
+                    camInitDis: 0.0001,
+                    camMinDis: 0.0001,
+                    camMaxDis: 0.0001,
+                    camFollowMult: 1000,
+                    camLerpMult: 1000,
+                    turnVelMultiplier: 1,
+                    turnSpeed: 100,
+                    mode: "CameraBasedMovement",
+                  }
+                : {
+                    camInitDis: -4,
+                    camMaxDis: -6,
+                    camMinDis: -1,
+                    camUpLimit: 1.2,
+                    camLowLimit: -0.8,
+                    camInitDir: { x: 0.2, y: 0 },
+                  })}
             >
               <EcctrlAnimation
                 characterURL={characterURL}
                 animationSet={animationSet}
                 key={cameraMode}
               >
-                <MyCharacterModel animation="idle" position={[0, -0.95, 0]} />
+                <MyCharacterModel
+                  animation="idle"
+                  position={[
+                    0,
+                    -0.95,
+                    cameraMode === "first-person" ? -0.7 : 0,
+                  ]}
+                />
               </EcctrlAnimation>
             </Ecctrl>
           </KeyboardControls>
@@ -115,22 +134,5 @@ const Scene = ({ cameraMode }) => {
     </>
   );
 };
-
-//             camCollision={false}
-//             camInitDis={0.0001}
-//             camMinDis={0.0001}
-//             camMaxDis={0.0001}
-//             camFollowMult={1000}
-//             camLerpMult={1000}
-//             turnVelMultiplier={1}
-//             turnSpeed={100}
-//             mode="CameraBasedMovement"
-// <MyCharacterModel animation="move" position={[0, -0.8, -0.5]} />;
-
-// camInitDis={-4} // Changed from -5 to bring camera closer
-// camMaxDis={-6} // Changed from -7 to limit max zoom out
-// camMinDis={-1}
-// camUpLimit={1.2} // Slightly reduced up angle
-// camLowLimit={-0.8} // Adjusted down angle
 
 export default Scene;
