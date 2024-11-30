@@ -4,7 +4,6 @@ import {
   KeyboardControls,
   OrbitControls,
   OrthographicCamera,
-  Stars,
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import { Suspense, useRef } from "react";
@@ -134,7 +133,7 @@ const Scene = ({ cameraMode }: SceneProps) => {
               {...(cameraMode === "first-person"
                 ? {
                     camCollision: false,
-                    camInitDis: 0.0001,
+                    camInitDis: -0.0001,
                     camMinDis: 0.0001,
                     camMaxDis: 0.0001,
                     camFollowMult: 1000,
@@ -143,6 +142,7 @@ const Scene = ({ cameraMode }: SceneProps) => {
                     turnSpeed: 100,
                     mode: "CameraBasedMovement",
                     smoothTime: 0.15,
+                    camInitDir: { x: 0, y: 0 },
                   }
                 : {
                     camInitDis: -4,
