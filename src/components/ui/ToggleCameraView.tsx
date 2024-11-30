@@ -1,11 +1,27 @@
+import { useEffect } from "react";
 import { ToggleCameraViewProps } from "../../types";
 
 const ToggleCameraView = ({
   cameraMode,
   setCameraMode,
 }: ToggleCameraViewProps) => {
+  const handleKeyPress = (event: KeyboardEvent) => {
+    if (event.key === "v") {
+      setCameraMode((prev) =>
+        prev === "third-person" ? "first-person" : "third-person"
+      );
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, []);
+
   return (
-    <div className="absolute z-10 top-4 right-4 w-[9.5rem] flex items-center gap-3 bg-slate-800/80 p-3 rounded-lg backdrop-blur-sm">
+    <div className="absolute z-10 top-[4.5rem] right-3 w-fit flex items-center gap-3 bg-slate-800/80 p-3 rounded-lg backdrop-blur-sm">
       <span className="text-sm font-medium text-white">
         {cameraMode === "third-person" ? "3rd Person" : "1st Person"}
       </span>
@@ -27,6 +43,9 @@ const ToggleCameraView = ({
           }`}
         />
       </button>
+      <kbd className="px-2.5 py-2 text-xs font-bold text-gray-800 bg-gray-100 border border-gray-200 rounded-lg dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500">
+        V
+      </kbd>
     </div>
   );
 };
