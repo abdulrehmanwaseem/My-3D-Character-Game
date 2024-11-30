@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useGraph } from "@react-three/fiber";
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { GLTF, SkeletonUtils } from "three-stdlib";
@@ -46,6 +46,7 @@ export function MyCharacterModel({ animation, ...props }: CharacterModelProps) {
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
+  console.log(actions, animation);
 
   // useEffect(() => {
   //   if (!actions) return;
@@ -63,15 +64,6 @@ export function MyCharacterModel({ animation, ...props }: CharacterModelProps) {
   //     idleAction?.reset().fadeIn(FADE_DURATION).play();
   //   }
   // }, [animation]);
-
-  useEffect(() => {
-    if (!actions) return;
-
-    const idleAction =
-      actions["rp_nathan_animated_003_walking|Take 001|BaseLayer"];
-
-    idleAction?.play();
-  }, [animation, actions]);
 
   return (
     <group ref={group} {...props} dispose={null}>

@@ -51,24 +51,47 @@ const Scene = ({ cameraMode }: SceneProps) => {
     <>
       <Perf minimal position="top-left" />
       <OrbitControls autoRotate maxPolarAngle={Math.PI / 2} />
-      <Environment preset="sunset" />
+
+      {/* environment and ambient light */}
+      <Environment preset="sunset" blur={0.5} />
+      <ambientLight intensity={0.5} />
+
       <directionalLight
-        intensity={0.7}
+        intensity={1.5}
         castShadow
-        position={[-15, 10, 15]}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-bias={-0.0005}
+        position={[-15, 20, 15]}
+        shadow-mapSize={[4096, 4096]}
+        shadow-camera-far={50}
+        shadow-camera-near={1}
+        shadow-bias={-0.001}
+        color="#ffd0b8"
       >
         <OrthographicCamera
-          left={-22}
-          right={15}
-          top={10}
-          bottom={-20}
+          left={-30}
+          right={30}
+          top={30}
+          bottom={-30}
           attach={"shadow-camera"}
           ref={shadowCameraRef}
         />
       </directionalLight>
+
+      {/* Fill lights for better ambient illumination */}
+      <pointLight position={[10, 10, 10]} intensity={0.3} color="#b8d8ff" />
+      <pointLight position={[-10, 10, -10]} intensity={0.2} color="#ffe3b8" />
+
+      {/* Spot light for dramatic shadows */}
+      <spotLight
+        position={[5, 15, 5]}
+        angle={0.4}
+        penumbra={1}
+        intensity={1}
+        castShadow
+        shadow-bias={-0.0001}
+        color="#fff5e6"
+        distance={30}
+        decay={2}
+      />
       <Physics timeStep="vary">
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
         {/* <CharacterController /> */}
@@ -76,9 +99,8 @@ const Scene = ({ cameraMode }: SceneProps) => {
           <KeyboardControls map={keyboardMap}>
             <Ecctrl
               key={cameraMode}
-              animated
               debug
-              position={[0, 10, 0]}
+              position={[0, 20, 0]}
               capsuleHalfHeight={0.55}
               capsuleRadius={0.3}
               floatHeight={0.2}
@@ -103,6 +125,7 @@ const Scene = ({ cameraMode }: SceneProps) => {
                     turnVelMultiplier: 1,
                     turnSpeed: 100,
                     mode: "CameraBasedMovement",
+                    smoothTime: 0.15,
                   }
                 : {
                     camInitDis: -4,

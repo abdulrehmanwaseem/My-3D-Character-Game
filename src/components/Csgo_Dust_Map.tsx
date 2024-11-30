@@ -46,7 +46,7 @@ export function DustMap(props: JSX.IntrinsicElements["group"]) {
         child.receiveShadow = true;
       }
     });
-  });
+  }, [scene]);
 
   return (
     <group castShadow receiveShadow>
