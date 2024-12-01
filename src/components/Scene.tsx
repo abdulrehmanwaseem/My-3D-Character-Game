@@ -14,10 +14,13 @@ import { DustMap } from "./Csgo_Dust_Map";
 import { MyCharacterModel } from "./My_Character";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
 import { AnimationSet, KeyboardControl, SceneProps } from "../types";
+import { IdleModel } from "./Idle";
 
-const Scene = ({ cameraMode }: SceneProps) => {
+const Scene = ({ cameraMode, players }: SceneProps) => {
   const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
-  const characterURL: string = "/models/My_Character.glb"; // Adjust to your model path
+  const characterURL: string = "/models/Idle.glb";
+
+  console.log(players);
 
   const { positionX, positionY, positionZ } = useControls(
     "Position Controls",
@@ -28,6 +31,7 @@ const Scene = ({ cameraMode }: SceneProps) => {
     },
     { collapsed: true }
   );
+  console.log(players);
 
   const keyboardMap: KeyboardControl[] = [
     { name: "forward", keys: ["ArrowUp", "KeyW"] },
@@ -38,12 +42,14 @@ const Scene = ({ cameraMode }: SceneProps) => {
     { name: "run", keys: ["Shift"] },
   ];
 
+  // 0 : "Action" 1 : "Armature.001|mixamo.com|Layer0.001" 2 : "Armature.001|mixamo.com|Layer0.002" 3 : "Target.001|Target|Action" 4 : "Target.001|Target|Action.001" 5 : "Target.001|Target|Armature|Take 001|BaseLayer" 6 : "Target.001|Target|Armature|Take 001|BaseLayer.001" 7 : "Target.001|Target|Armature|Take 001|BaseLayer.001 Retarget" 8 : "Target.001|Target|Armature|Take 001|BaseLayer.001 Retarget.001" 9 : "Target.001|Target|Armature|Take 001|BaseLayer.001 Retarget_" 10 : "Target.001|Target|Armature|Take 001|BaseLayer.001 Retarget_.001" 11 : "Target.001|Target|Armature|Take 001|BaseLayer.001 Retarget_Targ" 12 : "Target.001|Target|Armature|Take 001|BaseLayer.001_Target.001" 13 : "Target.001|Target|Armature|Take 001|BaseLayer.001_Target.001_Ta" 14 : "Target.001|Target|Armature|Take 001|BaseLayer.001_Target.002"
+
   const animationSet: AnimationSet = {
-    idle: "",
+    idle: "Action",
     walk: "Armature|Take 001|BaseLayer.001 Retarget",
     run: "Armature|Take 001|BaseLayer.001 Retarget",
     jump: "",
-    jumpIdle: "Armature|Take 001|BaseLayer.001 Retarget",
+    jumpIdle: "Action",
     jumpLand: "",
     fall: "",
   };
@@ -64,12 +70,6 @@ const Scene = ({ cameraMode }: SceneProps) => {
         speed={0.3}
         opacity={0.7}
         color="#c0c0c0"
-      />
-      <Cloud
-        position={[-40, 15, 45]}
-        speed={0.4}
-        opacity={0.6}
-        color="#bfbfbf"
       />
 
       <directionalLight
@@ -158,14 +158,32 @@ const Scene = ({ cameraMode }: SceneProps) => {
                 animationSet={animationSet}
                 key={cameraMode}
               >
-                <MyCharacterModel
+                {/* <MyCharacterModel
                   animation="idle"
                   position={[
                     0,
                     -0.95,
                     cameraMode === "first-person" ? -0.7 : 0,
                   ]}
-                />
+                /> */}
+                {players?.map((player, index) => (
+                  <IdleModel
+                    position={[
+                      0,
+                      -0.95,
+                      cameraMode === "first-person" ? -0.7 : 0,
+                    ]}
+                  />
+                  // <MyCharacterModel
+                  //   key={player.id} // Assuming each player has a unique id
+                  //   animation="idle"
+                  //   position={[
+                  //     index === 1 ? -2 : 0,
+                  //     -0.95,
+                  //     cameraMode === "first-person" ? -0.7 : 0,
+                  //   ]}
+                  // />
+                ))}
               </EcctrlAnimation>
             </Ecctrl>
           </KeyboardControls>

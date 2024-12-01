@@ -12,9 +12,11 @@
   "dependencies": {
     "@react-three/drei": "^9.112.0",
     "@react-three/fiber": "^8.17.7",
+    "@react-three/postprocessing": "^2.16.3",
     "@react-three/rapier": "^1.4.0",
     "ecctrl": "^1.0.90",
     "leva": "^0.9.35",
+    "playroomkit": "^0.0.83",
     "r3f-perf": "^7.2.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

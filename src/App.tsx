@@ -1,15 +1,28 @@
 import { Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Scene from "./components/Scene";
 import { EcctrlJoystick } from "ecctrl";
 import ToggleCameraView from "./components/ui/ToggleCameraView";
 import { CameraMode } from "./types";
 import EscapeCursor from "./components/ui/EscapeCursor";
+import { Bloom, EffectComposer } from "@react-three/postprocessing";
+import { Joystick, onPlayerJoin } from "playroomkit";
 
 const App = () => {
   const isMobile = () => window.innerWidth <= 768;
   const [cameraMode, setCameraMode] = useState<CameraMode>("third-person");
+  const [players, setPlayers] = useState([]); // State to manage players
+
+  useEffect(() => {
+    onPlayerJoin((state) => {
+      setPlayers((prev) => [...prev, state]);
+
+      state.onQuit(() => {
+        setPlayers((players) => players.filter((p) => p.state.id !== state.id));
+      });
+    });
+  }, []);
 
   return (
     <Suspense fallback={<Loader />}>
@@ -37,7 +50,10 @@ const App = () => {
           }
         }}
       >
-        <Scene cameraMode={cameraMode} />
+        <Scene cameraMode={cameraMode} players={players} />
+        {/* <EffectComposer>
+          <Bloom luminanceThreshold={1} intensity={1.22} />
+        </EffectComposer> */}
       </Canvas>
       <img
         className="absolute hidden select-none lg:p-5 bg-slate-800/80 backdrop-blur-sm lg:w-60 md:w-40 md:p-3 rounded-xl left-5 bottom-5 md:block"
