@@ -1,4 +1,4 @@
-import { Loader } from "@react-three/drei";
+import { Loader, PositionalAudio } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useState } from "react";
 import Scene from "./components/Scene";
@@ -6,13 +6,13 @@ import { EcctrlJoystick } from "ecctrl";
 import ToggleCameraView from "./components/ui/ToggleCameraView";
 import { CameraMode } from "./types";
 import EscapeCursor from "./components/ui/EscapeCursor";
-import { Bloom, EffectComposer } from "@react-three/postprocessing";
-import { Joystick, onPlayerJoin } from "playroomkit";
+import { onPlayerJoin } from "playroomkit";
 
 const App = () => {
   const isMobile = () => window.innerWidth <= 768;
   const [cameraMode, setCameraMode] = useState<CameraMode>("third-person");
   const [players, setPlayers] = useState([]); // State to manage players
+  const VOL_DISTANCE = import.meta.env.PROD ? 20 : 0.1;
 
   useEffect(() => {
     onPlayerJoin((state) => {
@@ -23,6 +23,8 @@ const App = () => {
       });
     });
   }, []);
+
+  console.log(import.meta.env.PROD);
 
   return (
     <Suspense fallback={<Loader />}>
@@ -50,6 +52,13 @@ const App = () => {
           }
         }}
       >
+        <PositionalAudio
+          autoplay
+          loop
+          url="/audios/CSGO_Theme.mp3" // Replace with your audio file path
+          distance={VOL_DISTANCE}
+        />
+
         <Scene cameraMode={cameraMode} players={players} />
         {/* <EffectComposer>
           <Bloom luminanceThreshold={1} intensity={1.22} />

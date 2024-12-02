@@ -11,16 +11,20 @@ import * as THREE from "three";
 import { Physics } from "@react-three/rapier";
 import { useControls } from "leva";
 import { DustMap } from "./Csgo_Dust_Map";
-import { MyCharacterModel } from "./My_Character";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
 import { AnimationSet, KeyboardControl, SceneProps } from "../types";
 import { IdleModel } from "./Idle";
 
+import { useFrame } from "@react-three/fiber";
+import { handleCharacterRespawn } from "../utils/helper";
+import { Model } from "./3D_Model";
 const Scene = ({ cameraMode, players }: SceneProps) => {
-  const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
+  const RESPAWN_HEIGHT = -10;
+  const INITIAL_POSITION = [0, 20, 0];
   const characterURL: string = "/models/Idle.glb";
 
-  console.log(players);
+  const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
+  const rigidBodyRef = useRef(null);
 
   const { positionX, positionY, positionZ } = useControls(
     "Position Controls",
@@ -31,7 +35,14 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
     },
     { collapsed: true }
   );
-  console.log(players);
+
+  useFrame(() => {
+    handleCharacterRespawn(
+      rigidBodyRef.current,
+      INITIAL_POSITION,
+      RESPAWN_HEIGHT
+    );
+  });
 
   const keyboardMap: KeyboardControl[] = [
     { name: "forward", keys: ["ArrowUp", "KeyW"] },
@@ -41,8 +52,6 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
     { name: "jump", keys: ["Space"] },
     { name: "run", keys: ["Shift"] },
   ];
-
-  // 0 : "Action" 1 : "Armature.001|mixamo.com|Layer0.001" 2 : "Armature.001|mixamo.com|Layer0.002" 3 : "Target.001|Target|Action" 4 : "Target.001|Target|Action.001" 5 : "Target.001|Target|Armature|Take 001|BaseLayer" 6 : "Target.001|Target|Armature|Take 001|BaseLayer.001" 7 : "Target.001|Target|Armature|Take 001|BaseLayer.001 Retarget" 8 : "Target.001|Target|Armature|Take 001|BaseLayer.001 Retarget.001" 9 : "Target.001|Target|Armature|Take 001|BaseLayer.001 Retarget_" 10 : "Target.001|Target|Armature|Take 001|BaseLayer.001 Retarget_.001" 11 : "Target.001|Target|Armature|Take 001|BaseLayer.001 Retarget_Targ" 12 : "Target.001|Target|Armature|Take 001|BaseLayer.001_Target.001" 13 : "Target.001|Target|Armature|Take 001|BaseLayer.001_Target.001_Ta" 14 : "Target.001|Target|Armature|Take 001|BaseLayer.001_Target.002"
 
   const animationSet: AnimationSet = {
     idle: "Action",
@@ -114,9 +123,10 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
         <Suspense fallback={null}>
           <KeyboardControls map={keyboardMap}>
             <Ecctrl
+              ref={rigidBodyRef}
               key={cameraMode}
               debug
-              position={[0, 20, 0]}
+              position={INITIAL_POSITION}
               capsuleHalfHeight={0.55}
               capsuleRadius={0.3}
               floatHeight={0.2}
@@ -153,38 +163,22 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
                     camInitDir: { x: 0.2, y: 0 },
                   })}
             >
-              <EcctrlAnimation
+              {/* <EcctrlAnimation
                 characterURL={characterURL}
                 animationSet={animationSet}
                 key={cameraMode}
               >
-                {/* <MyCharacterModel
-                  animation="idle"
+                <IdleModel
                   position={[
                     0,
                     -0.95,
                     cameraMode === "first-person" ? -0.7 : 0,
                   ]}
-                /> */}
-                {players?.map((player, index) => (
-                  <IdleModel
-                    position={[
-                      0,
-                      -0.95,
-                      cameraMode === "first-person" ? -0.7 : 0,
-                    ]}
-                  />
-                  // <MyCharacterModel
-                  //   key={player.id} // Assuming each player has a unique id
-                  //   animation="idle"
-                  //   position={[
-                  //     index === 1 ? -2 : 0,
-                  //     -0.95,
-                  //     cameraMode === "first-person" ? -0.7 : 0,
-                  //   ]}
-                  // />
-                ))}
-              </EcctrlAnimation>
+                /> 
+               </EcctrlAnimation> */}
+              <Model
+                position={[0, -0.95, cameraMode === "first-person" ? -0.7 : 0]}
+              />
             </Ecctrl>
           </KeyboardControls>
         </Suspense>
@@ -192,5 +186,15 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
     </>
   );
 };
+
+// <MyCharacterModel
+//   key={player.id} // Assuming each player has a unique id
+//   animation="idle"
+//   position={[
+//     index === 1 ? -2 : 0,
+//     -0.95,
+//     cameraMode === "first-person" ? -0.7 : 0,
+//   ]}
+// />
 
 export default Scene;

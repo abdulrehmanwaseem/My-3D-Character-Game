@@ -7,6 +7,7 @@ export interface ToggleCameraViewProps {
 
 export interface SceneProps {
   cameraMode: CameraMode;
+  players: [];
 }
 
 export interface KeyboardControl {

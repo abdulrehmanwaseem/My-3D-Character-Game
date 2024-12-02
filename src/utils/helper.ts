@@ -17,3 +17,22 @@ export const lerpAngle = (start: number, end: number, t: number): number => {
 export const normalizeAngle = (angle: number): number => {
   return angle - Math.PI * 2 * Math.floor((angle + Math.PI) / (Math.PI * 2));
 };
+
+export const handleCharacterRespawn = (
+  rigidBody: any,
+  position: number[],
+  respawnHeight: number
+) => {
+  if (!rigidBody) return;
+
+  const characterPosition = rigidBody.translation();
+  if (characterPosition.y < respawnHeight) {
+    // Teleport to spawn position
+    rigidBody.setTranslation(
+      { x: position[0], y: position[1], z: position[2] },
+      true
+    );
+    // Reset velocity
+    rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
+  }
+};
