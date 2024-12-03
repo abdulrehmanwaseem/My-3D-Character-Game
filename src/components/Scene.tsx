@@ -13,29 +13,32 @@ import { useControls } from "leva";
 import { DustMap } from "./Csgo_Dust_Map";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
 import { AnimationSet, KeyboardControl, SceneProps } from "../types";
-import { IdleModel } from "./Idle";
-
 import { useFrame } from "@react-three/fiber";
 import { handleCharacterRespawn } from "../utils/helper";
-import { Model } from "./3D_Model";
-import { AnimatedModel } from "./AnimatedModel";
+import { MyCharacterModel } from "./MyCharacter";
+
 const Scene = ({ cameraMode, players }: SceneProps) => {
   const RESPAWN_HEIGHT = -10;
   const INITIAL_POSITION = [0, 20, 0];
-  const characterURL: string = "/models/AnimatedModel.glb";
+  const characterURL: string = "/models/My_Character.glb";
 
   const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
   const rigidBodyRef = useRef(null);
 
-  const { positionX, positionY, positionZ } = useControls(
-    "Position Controls",
-    {
-      positionX: { value: -14, min: -500, max: 500, step: 0.5 },
-      positionY: { value: 0, min: -500, max: 500, step: 0.5 },
-      positionZ: { value: 29.5, min: -500, max: 500, step: 0.5 },
-    },
-    { collapsed: true }
-  );
+  const { positionX, positionY, positionZ } = {
+    positionX: -14,
+    positionY: 0,
+    positionZ: 29.5,
+  };
+
+  //   "Position Controls",
+  //   {
+  //     positionX: { value: -14, min: -500, max: 500, step: 0.5 },
+  //     positionY: { value: 0, min: -500, max: 500, step: 0.5 },
+  //     positionZ: { value: 29.5, min: -500, max: 500, step: 0.5 },
+  //   },
+  //   { collapsed: true }
+  // );
 
   useFrame(() => {
     handleCharacterRespawn(
@@ -57,11 +60,11 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
   const animationSet: AnimationSet = {
     idle: "Idle",
     walk: "Walk",
-    run: "Walk",
-    jump: "Idle",
+    run: "Sprint",
+    jump: "Jump",
     jumpIdle: "Idle",
     jumpLand: "Idle",
-    fall: "Idle",
+    fall: "Jump",
   };
 
   return (
@@ -177,7 +180,7 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
                     cameraMode === "first-person" ? -0.7 : 0,
                   ]}
                 />  */}
-                <AnimatedModel
+                <MyCharacterModel
                   position={[
                     0,
                     -0.95,

@@ -7,6 +7,7 @@ import ToggleCameraView from "./components/ui/ToggleCameraView";
 import { CameraMode } from "./types";
 import EscapeCursor from "./components/ui/EscapeCursor";
 import { onPlayerJoin } from "playroomkit";
+import { Leva } from "leva";
 
 const App = () => {
   const isMobile = () => window.innerWidth <= 768;
@@ -29,7 +30,13 @@ const App = () => {
   return (
     <Suspense fallback={<Loader />}>
       {isMobile() && <EcctrlJoystick buttonNumber={1} />}
+      {/* <PointerLockControls />
+              <Sky sunPosition={[100, 20, 100]} />
+      */}
 
+      <div className="absolute z-10 left-[38.5%]">
+        <Leva fill />
+      </div>
       <div className="absolute z-10 space-y-2 top-2 right-2 ">
         {/* Escape Cursor */}
         {!isMobile() && <EscapeCursor />}

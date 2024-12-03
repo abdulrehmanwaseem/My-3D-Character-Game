@@ -40,9 +40,9 @@ type CharacterModelProps = {
   animation: string;
 } & JSX.IntrinsicElements["group"];
 
-export function MyCharacterModel({ animation, ...props }: CharacterModelProps) {
+export function OtherCharacter({ animation, ...props }: CharacterModelProps) {
   const group = useRef<THREE.Group | null>(null);
-  const { scene, animations } = useGLTF("/models/My_Character.glb");
+  const { scene, animations } = useGLTF("/models/Other_Character.glb");
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
@@ -92,4 +92,4 @@ export function MyCharacterModel({ animation, ...props }: CharacterModelProps) {
   );
 }
 
-useGLTF.preload("/models/My_Character.glb");
+useGLTF.preload("/models/Other_Character.glb");
