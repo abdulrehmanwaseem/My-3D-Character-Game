@@ -1,13 +1,13 @@
 import { Loader, PositionalAudio } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { EcctrlJoystick } from "ecctrl";
+import { Leva } from "leva";
+import { onPlayerJoin } from "playroomkit";
 import { Suspense, useEffect, useState } from "react";
 import Scene from "./components/Scene";
-import { EcctrlJoystick } from "ecctrl";
+import EscapeCursor from "./components/ui/EscapeCursor";
 import ToggleCameraView from "./components/ui/ToggleCameraView";
 import { CameraMode } from "./types";
-import EscapeCursor from "./components/ui/EscapeCursor";
-import { onPlayerJoin } from "playroomkit";
-import { Leva } from "leva";
 
 const App = () => {
   const isMobile = () => window.innerWidth <= 768;
@@ -25,14 +25,9 @@ const App = () => {
     });
   }, []);
 
-  console.log(import.meta.env.PROD);
-
   return (
     <Suspense fallback={<Loader />}>
       {isMobile() && <EcctrlJoystick buttonNumber={1} />}
-      {/* <PointerLockControls />
-              <Sky sunPosition={[100, 20, 100]} />
-      */}
 
       <div className="absolute z-10 left-[38.5%]">
         <Leva fill />

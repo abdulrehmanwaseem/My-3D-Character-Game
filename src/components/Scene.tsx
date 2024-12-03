@@ -4,6 +4,7 @@ import {
   KeyboardControls,
   OrbitControls,
   OrthographicCamera,
+  Sky,
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import { Suspense, useRef } from "react";
@@ -75,6 +76,7 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
       {/* environment and ambient light */}
       <Environment preset="sunset" />
       <ambientLight intensity={0.5} />
+      <Sky sunPosition={[100, 20, 100]} />
 
       {/* Clouds in the sky */}
       <Cloud position={[0, 10, 20]} speed={0.5} opacity={0.8} color="#d3d3d3" />
