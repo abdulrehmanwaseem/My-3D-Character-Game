@@ -18,10 +18,11 @@ import { IdleModel } from "./Idle";
 import { useFrame } from "@react-three/fiber";
 import { handleCharacterRespawn } from "../utils/helper";
 import { Model } from "./3D_Model";
+import { AnimatedModel } from "./AnimatedModel";
 const Scene = ({ cameraMode, players }: SceneProps) => {
   const RESPAWN_HEIGHT = -10;
   const INITIAL_POSITION = [0, 20, 0];
-  const characterURL: string = "/models/Idle.glb";
+  const characterURL: string = "/models/AnimatedModel.glb";
 
   const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
   const rigidBodyRef = useRef(null);
@@ -54,13 +55,13 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
   ];
 
   const animationSet: AnimationSet = {
-    idle: "Action",
-    walk: "Armature|Take 001|BaseLayer.001 Retarget",
-    run: "Armature|Take 001|BaseLayer.001 Retarget",
-    jump: "",
-    jumpIdle: "Action",
-    jumpLand: "",
-    fall: "",
+    idle: "Idle",
+    walk: "Walk",
+    run: "Walk",
+    jump: "Idle",
+    jumpIdle: "Idle",
+    jumpLand: "Idle",
+    fall: "Idle",
   };
 
   return (
@@ -126,6 +127,7 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
               ref={rigidBodyRef}
               key={cameraMode}
               debug
+              animated
               position={INITIAL_POSITION}
               capsuleHalfHeight={0.55}
               capsuleRadius={0.3}
@@ -163,22 +165,26 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
                     camInitDir: { x: 0.2, y: 0 },
                   })}
             >
-              {/* <EcctrlAnimation
+              <EcctrlAnimation
                 characterURL={characterURL}
                 animationSet={animationSet}
                 key={cameraMode}
               >
-                <IdleModel
+                {/* <IdleModel
                   position={[
                     0,
                     -0.95,
                     cameraMode === "first-person" ? -0.7 : 0,
                   ]}
-                /> 
-               </EcctrlAnimation> */}
-              <Model
-                position={[0, -0.95, cameraMode === "first-person" ? -0.7 : 0]}
-              />
+                />  */}
+                <AnimatedModel
+                  position={[
+                    0,
+                    -0.95,
+                    cameraMode === "first-person" ? -0.7 : 0,
+                  ]}
+                />
+              </EcctrlAnimation>
             </Ecctrl>
           </KeyboardControls>
         </Suspense>
@@ -186,15 +192,5 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
     </>
   );
 };
-
-// <MyCharacterModel
-//   key={player.id} // Assuming each player has a unique id
-//   animation="idle"
-//   position={[
-//     index === 1 ? -2 : 0,
-//     -0.95,
-//     cameraMode === "first-person" ? -0.7 : 0,
-//   ]}
-// />
 
 export default Scene;

@@ -28,7 +28,7 @@ const App = () => {
 
   return (
     <Suspense fallback={<Loader />}>
-      {isMobile() && <EcctrlJoystick buttonNumber={5} />}
+      {isMobile() && <EcctrlJoystick buttonNumber={1} />}
 
       <div className="absolute z-10 space-y-2 top-2 right-2 ">
         {/* Escape Cursor */}
