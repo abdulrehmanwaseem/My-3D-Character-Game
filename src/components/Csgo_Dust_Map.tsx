@@ -36,17 +36,16 @@ type GLTFResult = GLTF & {
 
 export function DustMap(props: JSX.IntrinsicElements["group"]) {
   const { scene } = useGLTF("/models/Csgo_Dust_Map.glb") as GLTFResult;
-
   const group = useRef();
 
-  useEffect(() => {
-    scene.traverse((child) => {
-      if ((child as THREE.Mesh).isMesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-    });
-  }, [scene]);
+  // useEffect(() => {
+  //   scene.traverse((child) => {
+  //     if ((child as THREE.Mesh).isMesh) {
+  //       child.castShadow = true;
+  //       child.receiveShadow = true;
+  //     }
+  //   });
+  // }, [scene]);
 
   return (
     <group castShadow receiveShadow>

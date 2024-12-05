@@ -63,7 +63,7 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
     walk: "Walk",
     run: "Sprint",
     jump: "Jump",
-    jumpIdle: "Idle",
+    jumpIdle: "Jump",
     jumpLand: "Idle",
     fall: "Jump",
   };
@@ -79,13 +79,7 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
       <Sky sunPosition={[100, 20, 100]} />
 
       {/* Clouds in the sky */}
-      <Cloud position={[0, 10, 20]} speed={0.5} opacity={0.8} color="#d3d3d3" />
-      <Cloud
-        position={[-20, 15, 30]}
-        speed={0.3}
-        opacity={0.7}
-        color="#c0c0c0"
-      />
+      <Cloud position={[0, 11, 20]} speed={0.5} opacity={0.3} color="#d3d3d3" />
 
       <directionalLight
         intensity={1.5}
@@ -108,11 +102,11 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
       </directionalLight>
 
       {/* Fill lights for better ambient illumination */}
-      <pointLight position={[10, 10, 10]} intensity={0.3} color="#b8d8ff" />
-      <pointLight position={[-10, 10, -10]} intensity={0.2} color="#ffe3b8" />
+      {/* <pointLight position={[10, 10, 10]} intensity={0.3} color="#b8d8ff" />
+      <pointLight position={[-10, 10, -10]} intensity={0.2} color="#ffe3b8" /> */}
 
       {/* Spot light for dramatic shadows */}
-      <spotLight
+      {/* <spotLight
         position={[5, 15, 5]}
         angle={0.4}
         penumbra={1}
@@ -122,8 +116,8 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
         color="#fff5e6"
         distance={30}
         decay={2}
-      />
-      <Physics timeStep="vary">
+      /> */}
+      <Physics timeStep="vary" debug>
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
         {/* <CharacterController /> */}
         <Suspense fallback={null}>
@@ -134,9 +128,9 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
               debug
               animated
               position={INITIAL_POSITION}
-              capsuleHalfHeight={0.55}
-              capsuleRadius={0.3}
-              floatHeight={0.2}
+              capsuleHalfHeight={0.58}
+              capsuleRadius={0.33}
+              floatHeight={0.12}
               jumpVel={3}
               moveImpulsePointY={0}
               // Auto-balance adjustments
@@ -162,11 +156,11 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
                     camInitDir: { x: 0, y: 0 },
                   }
                 : {
-                    camInitDis: -4,
-                    camMaxDis: -6,
-                    camMinDis: -1,
-                    camUpLimit: 1.2,
-                    camLowLimit: -0.8,
+                    // camInitDis: -4,
+                    // camMaxDis: -6,
+                    // camMinDis: -1,
+                    // camUpLimit: 1.2,
+                    // camLowLimit: -0.8,
                     camInitDir: { x: 0.2, y: 0 },
                   })}
             >
@@ -175,19 +169,8 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
                 animationSet={animationSet}
                 key={cameraMode}
               >
-                {/* <IdleModel
-                  position={[
-                    0,
-                    -0.95,
-                    cameraMode === "first-person" ? -0.7 : 0,
-                  ]}
-                />  */}
                 <MyCharacterModel
-                  position={[
-                    0,
-                    -0.95,
-                    cameraMode === "first-person" ? -0.7 : 0,
-                  ]}
+                  position={[0, -0.9, cameraMode === "first-person" ? -0.7 : 0]}
                 />
               </EcctrlAnimation>
             </Ecctrl>

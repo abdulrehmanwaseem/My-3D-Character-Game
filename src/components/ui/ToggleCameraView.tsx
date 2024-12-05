@@ -6,7 +6,7 @@ const ToggleCameraView = ({
   setCameraMode,
 }: ToggleCameraViewProps) => {
   const handleKeyPress = (event: KeyboardEvent) => {
-    if (event.key === "v") {
+    if (event.key === "v" || event.key === "V") {
       setCameraMode((prev) =>
         prev === "third-person" ? "first-person" : "third-person"
       );
