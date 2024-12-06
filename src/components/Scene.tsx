@@ -9,22 +9,24 @@ import {
 import { Perf } from "r3f-perf";
 import { Suspense, useRef } from "react";
 import * as THREE from "three";
-import { Physics } from "@react-three/rapier";
-import { useControls } from "leva";
+import { Physics, RigidBody } from "@react-three/rapier";
 import { DustMap } from "./Csgo_Dust_Map";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
 import { AnimationSet, KeyboardControl, SceneProps } from "../types";
 import { useFrame } from "@react-three/fiber";
 import { handleCharacterRespawn } from "../utils/helper";
 import { MyCharacterModel } from "./MyCharacter";
+import { OtherCharacter } from "./OtherCharacter";
 
 const Scene = ({ cameraMode, players }: SceneProps) => {
+  const INITIAL_POSITION = [
+    [0, 20, 0],
+    [5, 20, 5],
+  ];
   const RESPAWN_HEIGHT = -10;
-  const INITIAL_POSITION = [0, 20, 0];
   const characterURL: string = "/models/My_Character.glb";
-
-  const shadowCameraRef = useRef<THREE.OrthographicCamera | null>(null);
   const rigidBodyRef = useRef(null);
+  const me = { id: 1 };
 
   const { positionX, positionY, positionZ } = {
     positionX: -14,
@@ -32,21 +34,15 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
     positionZ: 29.5,
   };
 
-  //   "Position Controls",
-  //   {
-  //     positionX: { value: -14, min: -500, max: 500, step: 0.5 },
-  //     positionY: { value: 0, min: -500, max: 500, step: 0.5 },
-  //     positionZ: { value: 29.5, min: -500, max: 500, step: 0.5 },
-  //   },
-  //   { collapsed: true }
-  // );
-
   useFrame(() => {
-    handleCharacterRespawn(
-      rigidBodyRef.current,
-      INITIAL_POSITION,
-      RESPAWN_HEIGHT
-    );
+    if (rigidBodyRef.current) {
+      // Handle respawn
+      handleCharacterRespawn(
+        rigidBodyRef.current,
+        INITIAL_POSITION[0],
+        RESPAWN_HEIGHT
+      );
+    }
   });
 
   const keyboardMap: KeyboardControl[] = [
@@ -73,12 +69,10 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
       <Perf minimal position="top-left" />
       <OrbitControls autoRotate maxPolarAngle={Math.PI / 2} />
 
-      {/* environment and ambient light */}
       <Environment preset="sunset" />
       <ambientLight intensity={0.5} />
       <Sky sunPosition={[100, 20, 100]} />
 
-      {/* Clouds in the sky */}
       <Cloud position={[0, 11, 20]} speed={0.5} opacity={0.3} color="#d3d3d3" />
 
       <directionalLight
@@ -97,16 +91,12 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
           top={30}
           bottom={-30}
           attach={"shadow-camera"}
-          ref={shadowCameraRef}
         />
       </directionalLight>
 
-      {/* Fill lights for better ambient illumination */}
       {/* <pointLight position={[10, 10, 10]} intensity={0.3} color="#b8d8ff" />
-      <pointLight position={[-10, 10, -10]} intensity={0.2} color="#ffe3b8" /> */}
-
-      {/* Spot light for dramatic shadows */}
-      {/* <spotLight
+      <pointLight position={[-10, 10, -10]} intensity={0.2} color="#ffe3b8" /> 
+      <spotLight
         position={[5, 15, 5]}
         angle={0.4}
         penumbra={1}
@@ -117,65 +107,77 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
         distance={30}
         decay={2}
       /> */}
-      <Physics timeStep="vary" debug>
+      <Physics timeStep="vary">
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
         {/* <CharacterController /> */}
-        <Suspense fallback={null}>
-          <KeyboardControls map={keyboardMap}>
-            <Ecctrl
-              ref={rigidBodyRef}
-              key={cameraMode}
-              debug
-              animated
-              position={INITIAL_POSITION}
-              capsuleHalfHeight={0.58}
-              capsuleRadius={0.33}
-              floatHeight={0.12}
-              jumpVel={3}
-              moveImpulsePointY={0}
-              // Auto-balance adjustments
-              autoBalanceSpringK={0.7}
-              autoBalanceDampingC={0.08}
-              // Slope handling
-              slopeMaxAngle={0.8}
-              slopeUpExtraForce={0.05}
-              slopeDownExtraForce={0.1}
-              // Camera settings
-              {...(cameraMode === "first-person"
-                ? {
-                    camCollision: false,
-                    camInitDis: -0.0001,
-                    camMinDis: 0.0001,
-                    camMaxDis: 0.0001,
-                    camFollowMult: 1000,
-                    camLerpMult: 1000,
-                    turnVelMultiplier: 1,
-                    turnSpeed: 100,
-                    mode: "CameraBasedMovement",
-                    smoothTime: 0.15,
-                    camInitDir: { x: 0, y: 0 },
-                  }
-                : {
-                    // camInitDis: -4,
-                    // camMaxDis: -6,
-                    // camMinDis: -1,
-                    // camUpLimit: 1.2,
-                    // camLowLimit: -0.8,
-                    camInitDir: { x: 0.2, y: 0 },
-                  })}
-            >
-              <EcctrlAnimation
-                characterURL={characterURL}
-                animationSet={animationSet}
-                key={cameraMode}
-              >
-                <MyCharacterModel
-                  position={[0, -0.9, cameraMode === "first-person" ? -0.7 : 0]}
-                />
-              </EcctrlAnimation>
-            </Ecctrl>
-          </KeyboardControls>
-        </Suspense>
+        {players.map((player) =>
+          player.id === me.id ? (
+            <KeyboardControls map={keyboardMap}>
+              <Suspense fallback={null}>
+                <Ecctrl
+                  ref={rigidBodyRef}
+                  key={cameraMode}
+                  debug
+                  animated
+                  position={INITIAL_POSITION[0]}
+                  capsuleHalfHeight={0.58}
+                  capsuleRadius={0.34}
+                  floatHeight={0.12}
+                  jumpVel={3}
+                  moveImpulsePointY={0}
+                  // Auto-balance adjustments
+                  autoBalanceSpringK={0.7}
+                  autoBalanceDampingC={0.08}
+                  // Slope handling
+                  slopeMaxAngle={0.8}
+                  slopeUpExtraForce={0.05}
+                  slopeDownExtraForce={0.1}
+                  // Camera settings
+                  {...(cameraMode === "first-person"
+                    ? {
+                        camCollision: false,
+                        camInitDis: -0.0001,
+                        camMinDis: 0.0001,
+                        camMaxDis: 0.0001,
+                        camFollowMult: 1000,
+                        camLerpMult: 1000,
+                        turnVelMultiplier: 1,
+                        turnSpeed: 100,
+                        mode: "CameraBasedMovement",
+                        smoothTime: 0.15,
+                        camInitDir: { x: 0, y: 0 },
+                      }
+                    : {
+                        camInitDis: -4,
+                        camMaxDis: -6,
+                        camMinDis: -1,
+                        camUpLimit: 1.2,
+                        camLowLimit: -0.8,
+                        camInitDir: { x: 0.2, y: 0 },
+                      })}
+                >
+                  <EcctrlAnimation
+                    characterURL={characterURL}
+                    animationSet={animationSet}
+                    key={cameraMode}
+                  >
+                    <MyCharacterModel
+                      position={[
+                        0,
+                        -0.9,
+                        cameraMode === "first-person" ? -0.7 : 0,
+                      ]}
+                    />
+                  </EcctrlAnimation>
+                </Ecctrl>
+              </Suspense>
+            </KeyboardControls>
+          ) : (
+            <RigidBody position={INITIAL_POSITION[1]} colliders="hull">
+              <OtherCharacter />
+            </RigidBody>
+          )
+        )}
       </Physics>
     </>
   );

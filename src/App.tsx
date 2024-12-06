@@ -8,12 +8,27 @@ import Scene from "./components/Scene";
 import EscapeCursor from "./components/ui/EscapeCursor";
 import ToggleCameraView from "./components/ui/ToggleCameraView";
 import { CameraMode } from "./types";
+import { MultiplayerProvider } from "./components/MultiplayerContext";
 
 const App = () => {
   const isMobile = () => window.innerWidth <= 768;
   const [cameraMode, setCameraMode] = useState<CameraMode>("third-person");
   const [players, setPlayers] = useState([]); // State to manage players
   const VOL_DISTANCE = import.meta.env.PROD ? 20 : 0.1;
+  const TEST_PLAYERS = [
+    {
+      id: 1,
+      name: "Test1",
+    },
+    {
+      id: 2,
+      name: "Test2",
+    },
+    {
+      id: 3,
+      name: "Test1",
+    },
+  ];
 
   useEffect(() => {
     onPlayerJoin((state) => {
@@ -54,14 +69,14 @@ const App = () => {
           }
         }}
       >
-        <PositionalAudio
+        {/* <PositionalAudio
           autoplay
           loop
           url="/audios/CSGO_Theme.mp3" // Replace with your audio file path
           distance={VOL_DISTANCE}
-        />
+        /> */}
 
-        <Scene cameraMode={cameraMode} players={players} />
+        <Scene cameraMode={cameraMode} players={TEST_PLAYERS} />
         {/* <EffectComposer>
           <Bloom luminanceThreshold={1} intensity={1.22} />
         </EffectComposer> */}

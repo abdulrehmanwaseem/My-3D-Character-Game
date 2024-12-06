@@ -1,6 +1,6 @@
-import { useGLTF } from "@react-three/drei";
-import { useGraph } from "@react-three/fiber";
-import React, { useEffect } from "react";
+import { Text, useGLTF } from "@react-three/drei";
+import { useFrame, useGraph } from "@react-three/fiber";
+import React from "react";
 import * as THREE from "three";
 import { GLTF, SkeletonUtils } from "three-stdlib";
 
@@ -32,34 +32,37 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[];
 };
 
-export function MyCharacterModel(props: JSX.IntrinsicElements["group"]) {
+export function MyCharacterModel({
+  name = "Player",
+  ...props
+}: JSX.IntrinsicElements["group"]) {
   const group = React.useRef<THREE.Group>();
+    const textRef = React.useRef<THREE.Group>();
   const { scene } = useGLTF("/models/My_Character.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
 
-  // useEffect(() => {
-  //   if (group.current) {
-  //     group.current.traverse((child) => {
-  //       if (child instanceof THREE.Mesh) {
-  //         child.castShadow = true;
-  //         child.receiveShadow = true;
-  //       }
-  //     });
-  //   }
-  // }, []);
-
-  useEffect(() => {
-    scene.traverse((child) => {
-      if ((child as THREE.Mesh).isMesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-    });
-  }, [scene]);
+   useFrame(({ camera }) => {
+    if (textRef.current) {
+      textRef.current.lookAt(camera.position);
+    }
+  });
 
   return (
     <group ref={group} {...props} dispose={null}>
+       <group ref={textRef}>
+        <Text
+          position={[0, 2.5, 0]}
+          fontSize={0.5}
+          color="white"
+          anchorX="center"
+          anchorY="middle"
+          outlineWidth={0.1}
+          outlineColor="black"
+        >
+          {name}
+        </Text>
+      </group>
       <group name="Scene">
         <group name="Character">
           <primitive object={nodes.mixamorigHips} />

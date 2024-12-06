@@ -1,8 +1,8 @@
-import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
-import { GLTF } from "three-stdlib";
-import { useEffect, useRef } from "react";
 import { RigidBody } from "@react-three/rapier";
+import { useRef } from "react";
+import * as THREE from "three";
+import { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -37,15 +37,6 @@ type GLTFResult = GLTF & {
 export function DustMap(props: JSX.IntrinsicElements["group"]) {
   const { scene } = useGLTF("/models/Csgo_Dust_Map.glb") as GLTFResult;
   const group = useRef();
-
-  // useEffect(() => {
-  //   scene.traverse((child) => {
-  //     if ((child as THREE.Mesh).isMesh) {
-  //       child.castShadow = true;
-  //       child.receiveShadow = true;
-  //     }
-  //   });
-  // }, [scene]);
 
   return (
     <group castShadow receiveShadow>

@@ -24,3 +24,5 @@ export interface AnimationSet {
   jumpLand: string;
   fall: string;
 }
+
+
