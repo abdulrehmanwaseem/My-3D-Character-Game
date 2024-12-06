@@ -37,12 +37,12 @@ export function MyCharacterModel({
   ...props
 }: JSX.IntrinsicElements["group"]) {
   const group = React.useRef<THREE.Group>();
-    const textRef = React.useRef<THREE.Group>();
+  const textRef = React.useRef<THREE.Group>();
   const { scene } = useGLTF("/models/My_Character.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
 
-   useFrame(({ camera }) => {
+  useFrame(({ camera }) => {
     if (textRef.current) {
       textRef.current.lookAt(camera.position);
     }
@@ -50,7 +50,7 @@ export function MyCharacterModel({
 
   return (
     <group ref={group} {...props} dispose={null}>
-       <group ref={textRef}>
+      <group ref={textRef}>
         <Text
           position={[0, 2.5, 0]}
           fontSize={0.5}
