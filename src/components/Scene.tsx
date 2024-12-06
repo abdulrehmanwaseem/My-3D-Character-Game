@@ -8,25 +8,36 @@ import {
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import { Suspense, useRef } from "react";
-import * as THREE from "three";
-import { Physics, RigidBody } from "@react-three/rapier";
+import { CapsuleCollider, Physics, RigidBody } from "@react-three/rapier";
 import { DustMap } from "./Csgo_Dust_Map";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
 import { AnimationSet, KeyboardControl, SceneProps } from "../types";
 import { useFrame } from "@react-three/fiber";
 import { handleCharacterRespawn } from "../utils/helper";
 import { MyCharacterModel } from "./MyCharacter";
-import { OtherCharacter } from "./OtherCharacter";
+import {
+  getState,
+  isHost,
+  me,
+  myPlayer,
+  setState,
+  useMultiplayerState,
+} from "playroomkit";
 
 const Scene = ({ cameraMode, players }: SceneProps) => {
   const INITIAL_POSITION = [
     [0, 20, 0],
-    [5, 20, 5],
+    [5, 5, 5],
   ];
+
+  const [playerPositions, setPlayerPositions] = useMultiplayerState(
+    "playerPositions",
+    {}
+  );
+
   const RESPAWN_HEIGHT = -10;
   const characterURL: string = "/models/My_Character.glb";
   const rigidBodyRef = useRef(null);
-  const me = { id: 1 };
 
   const { positionX, positionY, positionZ } = {
     positionX: -14,
@@ -36,11 +47,25 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
 
   useFrame(() => {
     if (rigidBodyRef.current) {
-      // Handle respawn
       handleCharacterRespawn(
         rigidBodyRef.current,
         INITIAL_POSITION[0],
         RESPAWN_HEIGHT
+      );
+
+      const position = rigidBodyRef.current.translation();
+      const positionArray: [number, number, number] = [
+        position.x,
+        position.y,
+        position.z,
+      ];
+
+      setPlayerPositions(
+        {
+          ...playerPositions,
+          [myPlayer().id]: positionArray,
+        },
+        true
       );
     }
   });
@@ -94,29 +119,16 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
         />
       </directionalLight>
 
-      {/* <pointLight position={[10, 10, 10]} intensity={0.3} color="#b8d8ff" />
-      <pointLight position={[-10, 10, -10]} intensity={0.2} color="#ffe3b8" /> 
-      <spotLight
-        position={[5, 15, 5]}
-        angle={0.4}
-        penumbra={1}
-        intensity={1}
-        castShadow
-        shadow-bias={-0.0001}
-        color="#fff5e6"
-        distance={30}
-        decay={2}
-      /> */}
-      <Physics timeStep="vary">
+      <Physics debug timeStep="vary">
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
-        {/* <CharacterController /> */}
-        {players.map((player) =>
-          player.id === me.id ? (
-            <KeyboardControls map={keyboardMap}>
+
+        {players.map((player, index) => {
+          return player.id === myPlayer().id ? (
+            <KeyboardControls key={index} map={keyboardMap}>
               <Suspense fallback={null}>
                 <Ecctrl
                   ref={rigidBodyRef}
-                  key={cameraMode}
+                  key={`${index}-${cameraMode}`}
                   debug
                   animated
                   position={INITIAL_POSITION[0]}
@@ -159,7 +171,7 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
                   <EcctrlAnimation
                     characterURL={characterURL}
                     animationSet={animationSet}
-                    key={cameraMode}
+                    key={`animation-${cameraMode}`}
                   >
                     <MyCharacterModel
                       position={[
@@ -173,11 +185,19 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
               </Suspense>
             </KeyboardControls>
           ) : (
-            <RigidBody position={INITIAL_POSITION[1]} colliders="hull">
-              <OtherCharacter />
+            <RigidBody
+              key={`remote-${index}`}
+              colliders={false}
+              lockRotations
+              position={playerPositions[player.id] || INITIAL_POSITION[1]}
+              linearDamping={12}
+              canSleep={false}
+            >
+              <MyCharacterModel scale={0.18} position-y={-0.25} />
+              <CapsuleCollider args={[0.08, 0.15]} />
             </RigidBody>
-          )
-        )}
+          );
+        })}
       </Physics>
     </>
   );

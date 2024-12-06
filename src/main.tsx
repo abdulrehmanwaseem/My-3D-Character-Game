@@ -5,9 +5,5 @@ import "./index.css";
 import { insertCoin } from "playroomkit";
 
 insertCoin().then(() =>
-  createRoot(document.getElementById("root")!).render(
-    // <StrictMode>
-    <App />
-    // </StrictMode>
-  )
+  createRoot(document.getElementById("root")!).render(<App />)
 );

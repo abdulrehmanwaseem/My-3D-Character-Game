@@ -8,27 +8,13 @@ import Scene from "./components/Scene";
 import EscapeCursor from "./components/ui/EscapeCursor";
 import ToggleCameraView from "./components/ui/ToggleCameraView";
 import { CameraMode } from "./types";
-import { MultiplayerProvider } from "./components/MultiplayerContext";
 
 const App = () => {
   const isMobile = () => window.innerWidth <= 768;
   const [cameraMode, setCameraMode] = useState<CameraMode>("third-person");
   const [players, setPlayers] = useState([]); // State to manage players
   const VOL_DISTANCE = import.meta.env.PROD ? 20 : 0.1;
-  const TEST_PLAYERS = [
-    {
-      id: 1,
-      name: "Test1",
-    },
-    {
-      id: 2,
-      name: "Test2",
-    },
-    {
-      id: 3,
-      name: "Test1",
-    },
-  ];
+  const isHighPerformance = window.navigator.hardwareConcurrency > 4;
 
   useEffect(() => {
     onPlayerJoin((state) => {
@@ -45,7 +31,7 @@ const App = () => {
       {isMobile() && <EcctrlJoystick buttonNumber={1} />}
 
       <div className="absolute z-10 left-[38.5%]">
-        <Leva fill />
+        <Leva fill hidden={import.meta.env.PROD} />
       </div>
       <div className="absolute z-10 space-y-2 top-2 right-2 ">
         {/* Escape Cursor */}
@@ -69,17 +55,7 @@ const App = () => {
           }
         }}
       >
-        {/* <PositionalAudio
-          autoplay
-          loop
-          url="/audios/CSGO_Theme.mp3" // Replace with your audio file path
-          distance={VOL_DISTANCE}
-        /> */}
-
-        <Scene cameraMode={cameraMode} players={TEST_PLAYERS} />
-        {/* <EffectComposer>
-          <Bloom luminanceThreshold={1} intensity={1.22} />
-        </EffectComposer> */}
+        <Scene cameraMode={cameraMode} players={players} />
       </Canvas>
       <img
         className="absolute hidden select-none lg:p-5 bg-slate-800/80 backdrop-blur-sm lg:w-60 md:w-40 md:p-3 rounded-xl left-5 bottom-5 md:block"
