@@ -1,4 +1,4 @@
-import { Loader, PositionalAudio } from "@react-three/drei";
+import { Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { EcctrlJoystick } from "ecctrl";
 import { Leva } from "leva";
@@ -13,7 +13,6 @@ const App = () => {
   const isMobile = () => window.innerWidth <= 768;
   const [cameraMode, setCameraMode] = useState<CameraMode>("third-person");
   const [players, setPlayers] = useState([]); // State to manage players
-  const VOL_DISTANCE = import.meta.env.PROD ? 20 : 0.1;
   const isHighPerformance = window.navigator.hardwareConcurrency > 4;
 
   useEffect(() => {
@@ -29,9 +28,8 @@ const App = () => {
   return (
     <Suspense fallback={<Loader />}>
       {isMobile() && <EcctrlJoystick buttonNumber={1} />}
-
       <div className="absolute z-10 left-[38.5%]">
-        <Leva fill hidden={import.meta.env.PROD} />
+        <Leva fill hidden />
       </div>
       <div className="absolute z-10 space-y-2 top-2 right-2 ">
         {/* Escape Cursor */}

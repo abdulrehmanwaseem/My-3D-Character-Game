@@ -4,31 +4,26 @@ import {
   KeyboardControls,
   OrbitControls,
   OrthographicCamera,
+  PositionalAudio,
   Sky,
+  Text,
 } from "@react-three/drei";
-import { Perf } from "r3f-perf";
-import { Suspense, useRef } from "react";
-import { CapsuleCollider, Physics, RigidBody } from "@react-three/rapier";
-import { DustMap } from "./Csgo_Dust_Map";
-import Ecctrl, { EcctrlAnimation } from "ecctrl";
-import { AnimationSet, KeyboardControl, SceneProps } from "../types";
 import { useFrame } from "@react-three/fiber";
+import { CapsuleCollider, Physics, RigidBody } from "@react-three/rapier";
+import Ecctrl, { EcctrlAnimation } from "ecctrl";
+import { myPlayer, useMultiplayerState } from "playroomkit";
+import { Suspense, useMemo, useRef } from "react";
+import { AnimationSet, KeyboardControl, SceneProps } from "../types";
 import { handleCharacterRespawn } from "../utils/helper";
+import { DustMap } from "./Csgo_Dust_Map";
 import { MyCharacterModel } from "./MyCharacter";
-import {
-  getState,
-  isHost,
-  me,
-  myPlayer,
-  setState,
-  useMultiplayerState,
-} from "playroomkit";
 
 const Scene = ({ cameraMode, players }: SceneProps) => {
   const INITIAL_POSITION = [
     [0, 20, 0],
     [5, 5, 5],
   ];
+  const VOL_DISTANCE = import.meta.env.PROD ? 20 : 0.1;
 
   const [playerPositions, setPlayerPositions] = useMultiplayerState(
     "playerPositions",
@@ -53,31 +48,34 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
         RESPAWN_HEIGHT
       );
 
-      const position = rigidBodyRef.current.translation();
-      const positionArray: [number, number, number] = [
-        position.x,
-        position.y,
-        position.z,
-      ];
+      //   const position = rigidBodyRef.current.translation();
+      //   const positionArray: [number, number, number] = [
+      //     position.x,
+      //     position.y,
+      //     position.z,
+      //   ];
 
-      setPlayerPositions(
-        {
-          ...playerPositions,
-          [myPlayer().id]: positionArray,
-        },
-        true
-      );
+      //   setPlayerPositions(
+      //     {
+      //       ...playerPositions,
+      //       [myPlayer().id]: positionArray,
+      //     },
+      //     true
+      //   );
     }
   });
 
-  const keyboardMap: KeyboardControl[] = [
-    { name: "forward", keys: ["ArrowUp", "KeyW"] },
-    { name: "backward", keys: ["ArrowDown", "KeyS"] },
-    { name: "leftward", keys: ["ArrowLeft", "KeyA"] },
-    { name: "rightward", keys: ["ArrowRight", "KeyD"] },
-    { name: "jump", keys: ["Space"] },
-    { name: "run", keys: ["Shift"] },
-  ];
+  const keyboardMap: KeyboardControl[] = useMemo(
+    () => [
+      { name: "forward", keys: ["ArrowUp", "KeyW"] },
+      { name: "backward", keys: ["ArrowDown", "KeyS"] },
+      { name: "leftward", keys: ["ArrowLeft", "KeyA"] },
+      { name: "rightward", keys: ["ArrowRight", "KeyD"] },
+      { name: "jump", keys: ["Space"] },
+      { name: "run", keys: ["Shift"] },
+    ],
+    []
+  );
 
   const animationSet: AnimationSet = {
     idle: "Idle",
@@ -91,7 +89,6 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
 
   return (
     <>
-      <Perf minimal position="top-left" />
       <OrbitControls autoRotate maxPolarAngle={Math.PI / 2} />
 
       <Environment preset="sunset" />
@@ -119,7 +116,7 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
         />
       </directionalLight>
 
-      <Physics debug timeStep="vary">
+      <Physics timeStep="vary">
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
 
         {players.map((player, index) => {
@@ -132,10 +129,11 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
                   debug
                   animated
                   position={INITIAL_POSITION[0]}
-                  capsuleHalfHeight={0.58}
+                  capsuleHalfHeight={0.5}
                   capsuleRadius={0.34}
                   floatHeight={0.12}
                   jumpVel={3}
+                  maxVelLimit={3}
                   moveImpulsePointY={0}
                   // Auto-balance adjustments
                   autoBalanceSpringK={0.7}
@@ -160,7 +158,7 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
                         camInitDir: { x: 0, y: 0 },
                       }
                     : {
-                        camInitDis: -4,
+                        camInitDis: -3.5,
                         camMaxDis: -6,
                         camMinDis: -1,
                         camUpLimit: 1.2,
@@ -173,7 +171,14 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
                     animationSet={animationSet}
                     key={`animation-${cameraMode}`}
                   >
+                    <PositionalAudio
+                      url="/audios/CSGO_Theme.mp3"
+                      distance={VOL_DISTANCE}
+                      loop
+                      autoplay
+                    />
                     <MyCharacterModel
+                      scale={0.9}
                       position={[
                         0,
                         -0.9,
@@ -193,6 +198,17 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
               linearDamping={12}
               canSleep={false}
             >
+              <group position-y={3}>
+                <Text fontSize={0.2}>
+                  Name
+                  <meshStandardMaterial color="grey" />
+                </Text>
+                <Text fontSize={0.2}>
+                  Abdul Rehman
+                  <meshStandardMaterial color="grey" />
+                </Text>
+              </group>
+
               <MyCharacterModel scale={0.18} position-y={-0.25} />
               <CapsuleCollider args={[0.08, 0.15]} />
             </RigidBody>

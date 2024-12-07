@@ -33,7 +33,7 @@ type GLTFResult = GLTF & {
 };
 
 export function MyCharacterModel({ ...props }: JSX.IntrinsicElements["group"]) {
-  const group = React.useRef<THREE.Group>();
+  const group = React.useRef<THREE.Group>(null!);
   const { scene } = useGLTF("/models/My_Character.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
