@@ -201,21 +201,14 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
             </RigidBody>
           );
         })} */}
-        {/* 
+
         <Suspense fallback={null}>
-          <RigidBody
-            key={`remote`}
-            lockRotations
-            position={[5, 3, 5]}
-            linearDamping={12}
-            canSleep={false}
-            mass={0.01}
-          >
+          <RigidBody key={`remote`} position={[5, 3, 5]} canSleep={false}>
             <mesh castShadow receiveShadow>
               <boxGeometry args={[1, 1, 1]} />
               <meshStandardMaterial
-                color="white"
-                emissive="yellow"
+                color="cyan"
+                emissive="cyan"
                 emissiveIntensity={1}
                 metalness={0.2}
                 roughness={0.1}
@@ -227,12 +220,12 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
             <pointLight
               position={[0, 0, 0]}
               intensity={2}
-              color="yellow"
+              color="cyan"
               distance={5}
               decay={2}
             />
           </RigidBody>
-        </Suspense> */}
+        </Suspense>
       </Physics>
     </>
   );
