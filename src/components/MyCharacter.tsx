@@ -1,5 +1,5 @@
-import { Text, useGLTF } from "@react-three/drei";
-import { useFrame, useGraph } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
+import { useGraph } from "@react-three/fiber";
 import React from "react";
 import * as THREE from "three";
 import { GLTF, SkeletonUtils } from "three-stdlib";

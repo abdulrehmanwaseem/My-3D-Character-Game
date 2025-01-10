@@ -6,12 +6,10 @@ import {
   OrthographicCamera,
   PositionalAudio,
   Sky,
-  Text,
 } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { CapsuleCollider, Physics, RigidBody } from "@react-three/rapier";
+import { Physics, RigidBody } from "@react-three/rapier";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
-import { myPlayer, useMultiplayerState } from "playroomkit";
 import { Suspense, useMemo, useRef } from "react";
 import { AnimationSet, KeyboardControl, SceneProps } from "../types";
 import { handleCharacterRespawn } from "../utils/helper";
@@ -21,14 +19,9 @@ import { MyCharacterModel } from "./MyCharacter";
 const Scene = ({ cameraMode, players }: SceneProps) => {
   const INITIAL_POSITION = [
     [0, 20, 0],
-    [5, 5, 5],
+    [5, 3, 5],
   ];
-  const VOL_DISTANCE = import.meta.env.PROD ? 20 : 0.1;
-
-  const [playerPositions, setPlayerPositions] = useMultiplayerState(
-    "playerPositions",
-    {}
-  );
+  const VOL_DISTANCE = cameraMode === "first-person" ? 0.03 : 0.1;
 
   const RESPAWN_HEIGHT = -10;
   const characterURL: string = "/models/My_Character.glb";
@@ -42,11 +35,7 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
 
   useFrame(() => {
     if (rigidBodyRef.current) {
-      handleCharacterRespawn(
-        rigidBodyRef.current,
-        INITIAL_POSITION[0],
-        RESPAWN_HEIGHT
-      );
+      handleCharacterRespawn(rigidBodyRef.current, [0, 20, 0], RESPAWN_HEIGHT);
 
       //   const position = rigidBodyRef.current.translation();
       //   const positionArray: [number, number, number] = [
@@ -73,6 +62,7 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
       { name: "rightward", keys: ["ArrowRight", "KeyD"] },
       { name: "jump", keys: ["Space"] },
       { name: "run", keys: ["Shift"] },
+      { name: "action1", keys: ["KeyE"] },
     ],
     []
   );
@@ -85,6 +75,7 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
     jumpIdle: "Jump",
     jumpLand: "Idle",
     fall: "Jump",
+    action1: "Dying",
   };
 
   return (
@@ -116,80 +107,76 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
         />
       </directionalLight>
 
-      <Physics timeStep="vary">
+      <Physics timeStep="vary" debug={import.meta.env.DEV}>
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
 
-        {players.map((player, index) => {
-          return player.id === myPlayer().id ? (
-            <KeyboardControls key={index} map={keyboardMap}>
-              <Suspense fallback={null}>
-                <Ecctrl
-                  ref={rigidBodyRef}
-                  key={`${index}-${cameraMode}`}
-                  debug
-                  animated
-                  position={INITIAL_POSITION[0]}
-                  capsuleHalfHeight={0.5}
-                  capsuleRadius={0.34}
-                  floatHeight={0.12}
-                  jumpVel={3}
-                  maxVelLimit={3}
-                  moveImpulsePointY={0}
-                  // Auto-balance adjustments
-                  autoBalanceSpringK={0.7}
-                  autoBalanceDampingC={0.08}
-                  // Slope handling
-                  slopeMaxAngle={0.8}
-                  slopeUpExtraForce={0.05}
-                  slopeDownExtraForce={0.1}
-                  // Camera settings
-                  {...(cameraMode === "first-person"
-                    ? {
-                        camCollision: false,
-                        camInitDis: -0.0001,
-                        camMinDis: 0.0001,
-                        camMaxDis: 0.0001,
-                        camFollowMult: 1000,
-                        camLerpMult: 1000,
-                        turnVelMultiplier: 1,
-                        turnSpeed: 100,
-                        mode: "CameraBasedMovement",
-                        smoothTime: 0.15,
-                        camInitDir: { x: 0, y: 0 },
-                      }
-                    : {
-                        camInitDis: -3.5,
-                        camMaxDis: -6,
-                        camMinDis: -1,
-                        camUpLimit: 1.2,
-                        camLowLimit: -0.8,
-                        camInitDir: { x: 0.2, y: 0 },
-                      })}
-                >
-                  <EcctrlAnimation
-                    characterURL={characterURL}
-                    animationSet={animationSet}
-                    key={`animation-${cameraMode}`}
-                  >
-                    <PositionalAudio
-                      url="/audios/CSGO_Theme.mp3"
-                      distance={VOL_DISTANCE}
-                      loop
-                      autoplay
-                    />
-                    <MyCharacterModel
-                      scale={0.9}
-                      position={[
-                        0,
-                        -0.9,
-                        cameraMode === "first-person" ? -0.7 : 0,
-                      ]}
-                    />
-                  </EcctrlAnimation>
-                </Ecctrl>
-              </Suspense>
-            </KeyboardControls>
-          ) : (
+        {/* {players.map((player, index) => {
+          return player.id === myPlayer().id ? ( */}
+        <KeyboardControls map={keyboardMap}>
+          <Suspense fallback={null}>
+            <Ecctrl
+              ref={rigidBodyRef}
+              key={cameraMode}
+              animated
+              // lockRotations
+              position={[0, 20, 0]}
+              capsuleHalfHeight={0.5}
+              capsuleRadius={0.32}
+              floatHeight={0.12}
+              jumpVel={3}
+              maxVelLimit={3}
+              moveImpulsePointY={0}
+              // Auto-balance adjustments
+              autoBalanceSpringK={0.7}
+              autoBalanceDampingC={0.08}
+              // Slope handling
+              slopeMaxAngle={0.8}
+              slopeUpExtraForce={0.05}
+              slopeDownExtraForce={0.1}
+              // Camera settings
+              {...(cameraMode === "first-person"
+                ? {
+                    camCollision: false,
+                    camInitDis: -0.0001,
+                    camMinDis: 0.0001,
+                    camMaxDis: 0.0001,
+                    camFollowMult: 1000,
+                    camLerpMult: 1000,
+                    turnVelMultiplier: 1,
+                    turnSpeed: 100,
+                    mode: "CameraBasedMovement",
+                    smoothTime: 0.15,
+                    camInitDir: { x: 0, y: 0 },
+                  }
+                : {
+                    camInitDis: -3.5,
+                    camMaxDis: -6,
+                    camMinDis: -1,
+                    camUpLimit: 1.2,
+                    camLowLimit: -0.8,
+                    camInitDir: { x: 0.2, y: 0 },
+                  })}
+            >
+              <EcctrlAnimation
+                characterURL={characterURL}
+                animationSet={animationSet}
+                key={`animation-${cameraMode}`}
+              >
+                <MyCharacterModel
+                  scale={0.9}
+                  position={[0, -0.9, cameraMode === "first-person" ? -0.7 : 0]}
+                />
+              </EcctrlAnimation>
+              <PositionalAudio
+                url="/audios/CSGO_Theme.mp3"
+                distance={VOL_DISTANCE}
+                loop
+                autoplay
+              />
+            </Ecctrl>
+          </Suspense>
+        </KeyboardControls>
+        {/* ) : (
             <RigidBody
               key={`remote-${index}`}
               colliders={false}
@@ -213,7 +200,39 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
               <CapsuleCollider args={[0.08, 0.15]} />
             </RigidBody>
           );
-        })}
+        })} */}
+        {/* 
+        <Suspense fallback={null}>
+          <RigidBody
+            key={`remote`}
+            lockRotations
+            position={[5, 3, 5]}
+            linearDamping={12}
+            canSleep={false}
+            mass={0.01}
+          >
+            <mesh castShadow receiveShadow>
+              <boxGeometry args={[1, 1, 1]} />
+              <meshStandardMaterial
+                color="white"
+                emissive="yellow"
+                emissiveIntensity={1}
+                metalness={0.2}
+                roughness={0.1}
+                transparent={true}
+                opacity={0.8}
+              />
+            </mesh>
+
+            <pointLight
+              position={[0, 0, 0]}
+              intensity={2}
+              color="yellow"
+              distance={5}
+              decay={2}
+            />
+          </RigidBody>
+        </Suspense> */}
       </Physics>
     </>
   );

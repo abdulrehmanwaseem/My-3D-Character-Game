@@ -1,4 +1,4 @@
-import { useGLTF } from "@react-three/drei";
+import { PositionalAudio, useGLTF } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
 import { useRef } from "react";
 import * as THREE from "three";
