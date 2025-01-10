@@ -28,6 +28,7 @@ This project features my personal 3D face model as the main character, set in a 
 - **Third-Person Controller & Camera:** A smooth, customized third-person view with full control of movement.
 - **Recreated CS:GO Dust Map:** Explore a faithfully recreated version of the Dust map, providing nostalgic gameplay.
 - **Real-Time Physics:** Powered by React-Three/Rapier, enabling realistic physical interactions in the game world.
+- **Camera Toggle:** The game has camera toggle option for switching between 3rd person to 1st person.
 - **Immersive 3D Environment:** Built with React-Three-Fiber and Three.js for high-quality 3D rendering and interactivity.
 - **Responsive Design:** Optimized to run smoothly across different devices and screen sizes.
 - **Mobile Touch Support:** The game is optimized for touch controls on mobile devices, providing a seamless experience on tablets and smartphones.
