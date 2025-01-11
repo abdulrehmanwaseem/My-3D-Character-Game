@@ -8,6 +8,7 @@ import Scene from "./components/Scene";
 import EscapeCursor from "./components/ui/EscapeCursor";
 import ToggleCameraView from "./components/ui/ToggleCameraView";
 import { CameraMode } from "./types";
+import ControlCard from "./components/ui/controlCard";
 
 const App = () => {
   const isMobile = () => window.innerWidth <= 768;
@@ -31,7 +32,7 @@ const App = () => {
       <div className="absolute z-10 left-[38.5%]">
         <Leva fill hidden />
       </div>
-      <div className="absolute z-10 space-y-2 top-2 right-2 ">
+      <div className="absolute z-10 space-y-2 top-2 right-2">
         {/* Escape Cursor */}
         {!isMobile() && <EscapeCursor />}
 
@@ -40,14 +41,7 @@ const App = () => {
           cameraMode={cameraMode}
           setCameraMode={setCameraMode}
         />
-      </div>
-      <div className="absolute z-10 space-y-2 top-[7.2rem] right-2">
-        <span className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-800 rounded-lg w-fit bg-slate-800/80 backdrop-blur-sm dark:text-gray-100">
-          Press for dying animation
-          <span className="px-2 py-1.5 text-xs font-semibold bg-gray-100 border border-gray-200 rounded-lg dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500">
-            E
-          </span>
-        </span>
+        <ControlCard text="Press for dying animation" keyboardKey={"E"} />
       </div>
       <Canvas
         style={{
