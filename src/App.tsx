@@ -8,7 +8,7 @@ import Scene from "./components/Scene";
 import EscapeCursor from "./components/ui/EscapeCursor";
 import ToggleCameraView from "./components/ui/ToggleCameraView";
 import { CameraMode } from "./types";
-import ControlCard from "./components/ui/controlCard";
+import ControlCard from "./components/ui/ControlCard";
 
 const App = () => {
   const isMobile = () => window.innerWidth <= 768;
@@ -41,7 +41,7 @@ const App = () => {
           cameraMode={cameraMode}
           setCameraMode={setCameraMode}
         />
-        <ControlCard text="Press for dying animation" keyboardKey={"E"} />
+        <ControlCard text="Press to play dying animation" keyboardKey={"E"} />
       </div>
       <Canvas
         style={{

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ControlCard from "./controlCard";
+import ControlCard from "./ControlCard";
 
 const EscapeCursor = () => {
   const [isCursorHidden, setIsCursorHidden] = useState(false);
