@@ -16,7 +16,7 @@ import { handleCharacterRespawn } from "../utils/helper";
 import { DustMap } from "./Csgo_Dust_Map";
 import { MyCharacterModel } from "./MyCharacter";
 
-const Scene = ({ cameraMode, players }: SceneProps) => {
+const Scene = ({ cameraMode, players = [] }: SceneProps) => {
   const INITIAL_POSITION = [
     [0, 20, 0],
     [5, 3, 5],
@@ -176,32 +176,8 @@ const Scene = ({ cameraMode, players }: SceneProps) => {
             </Ecctrl>
           </Suspense>
         </KeyboardControls>
-        {/* ) : (
-            <RigidBody
-              key={`remote-${index}`}
-              colliders={false}
-              lockRotations
-              position={playerPositions[player.id] || INITIAL_POSITION[1]}
-              linearDamping={12}
-              canSleep={false}
-            >
-              <group position-y={3}>
-                <Text fontSize={0.2}>
-                  Name
-                  <meshStandardMaterial color="grey" />
-                </Text>
-                <Text fontSize={0.2}>
-                  Abdul Rehman
-                  <meshStandardMaterial color="grey" />
-                </Text>
-              </group>
 
-              <MyCharacterModel scale={0.18} position-y={-0.25} />
-              <CapsuleCollider args={[0.08, 0.15]} />
-            </RigidBody>
-          );
-        })} */}
-
+        {/* Box */}
         <Suspense fallback={null}>
           <RigidBody key={`remote`} position={[5, 3, 5]} canSleep={false}>
             <mesh castShadow receiveShadow>

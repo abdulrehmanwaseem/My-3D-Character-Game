@@ -2,7 +2,7 @@ import { Loader, PositionalAudio } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { EcctrlJoystick } from "ecctrl";
 import { Leva } from "leva";
-import { onPlayerJoin } from "playroomkit";
+import { onPlayerJoin, PlayerState } from "playroomkit";
 import { Suspense, useEffect, useState } from "react";
 import Scene from "./components/Scene";
 import EscapeCursor from "./components/ui/EscapeCursor";
@@ -13,7 +13,7 @@ import ControlCard from "./components/ui/ControlCard";
 const App = () => {
   const isMobile = () => window.innerWidth <= 768;
   const [cameraMode, setCameraMode] = useState<CameraMode>("third-person");
-  const [players, setPlayers] = useState([]); // State to manage players
+  const [players, setPlayers] = useState<PlayerState[]>([]); // State to manage players
   const isHighPerformance = window.navigator.hardwareConcurrency > 4;
 
   useEffect(() => {
@@ -28,21 +28,20 @@ const App = () => {
 
   return (
     <Suspense fallback={<Loader />}>
+      <Leva hidden />
+
       {isMobile() && <EcctrlJoystick buttonNumber={1} />}
-      <div className="absolute z-10 left-[38.5%]">
-        <Leva fill hidden />
-      </div>
+
       <div className="absolute z-10 space-y-2 top-2 right-2">
-        {/* Escape Cursor */}
         {!isMobile() && <EscapeCursor />}
 
-        {/* Camera Toggle Switch */}
         <ToggleCameraView
           cameraMode={cameraMode}
           setCameraMode={setCameraMode}
         />
         <ControlCard text="Press to play dying animation" keyboardKey={"E"} />
       </div>
+
       <Canvas
         style={{
           touchAction: "none",
