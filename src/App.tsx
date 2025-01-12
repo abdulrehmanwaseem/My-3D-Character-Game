@@ -9,6 +9,7 @@ import EscapeCursor from "./components/ui/EscapeCursor";
 import ToggleCameraView from "./components/ui/ToggleCameraView";
 import { CameraMode } from "./types";
 import ControlCard from "./components/ui/ControlCard";
+import Crosshair from "./components/ui/Crosshair";
 
 const App = () => {
   const isMobile = () => window.innerWidth <= 768;
@@ -28,7 +29,10 @@ const App = () => {
 
   return (
     <Suspense fallback={<Loader />}>
-      <Leva hidden />
+      <div className="absolute z-10 w-fit top-2 left-2 ">
+        <Leva fill collapsed />
+      </div>
+      {cameraMode === "first-person" && <Crosshair />}
 
       {isMobile() && <EcctrlJoystick buttonNumber={1} />}
 

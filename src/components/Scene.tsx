@@ -10,13 +10,18 @@ import {
 import { useFrame } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
+import { useControls } from "leva";
 import { Suspense, useMemo, useRef } from "react";
 import { AnimationSet, KeyboardControl, SceneProps } from "../types";
 import { handleCharacterRespawn } from "../utils/helper";
+import { AK47_GUN } from "./Ak47_GUN";
 import { DustMap } from "./Csgo_Dust_Map";
 import { MyCharacterModel } from "./MyCharacter";
 
 const Scene = ({ cameraMode, players = [] }: SceneProps) => {
+  const { position } = useControls("AK47 Gun", {
+    position: { value: [-0.1, 0.4, 0.2], step: 0.1 },
+  });
   const INITIAL_POSITION = [
     [0, 20, 0],
     [5, 3, 5],
@@ -62,7 +67,9 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
       { name: "rightward", keys: ["ArrowRight", "KeyD"] },
       { name: "jump", keys: ["Space"] },
       { name: "run", keys: ["Shift"] },
-      { name: "action1", keys: ["KeyE"] },
+      { name: "action1", keys: ["KeyE"] }, // Left click
+      { name: "action2", keys: ["KeyF"] },
+      { name: "action3", keys: ["Mouse2"] },
     ],
     []
   );
@@ -76,6 +83,8 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
     jumpLand: "Idle",
     fall: "Jump",
     action1: "Dying",
+    action2: "Dying",
+    action3: "Dying",
   };
 
   return (
@@ -107,7 +116,10 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
         />
       </directionalLight>
 
-      <Physics timeStep="vary" debug={import.meta.env.DEV}>
+      <Physics
+        timeStep="vary"
+        //  debug={import.meta.env.DEV}
+      >
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
 
         {/* {players.map((player, index) => {
@@ -166,6 +178,9 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
                   scale={0.9}
                   position={[0, -0.9, cameraMode === "first-person" ? -0.7 : 0]}
                 />
+                {cameraMode === "first-person" && (
+                  <AK47_GUN scale={4} position={position} />
+                )}
               </EcctrlAnimation>
               <PositionalAudio
                 url="/audios/CSGO_Theme.mp3"
