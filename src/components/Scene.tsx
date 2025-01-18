@@ -19,17 +19,14 @@ import { DustMap } from "./Csgo_Dust_Map";
 import { MyCharacterModel } from "./MyCharacter";
 
 const Scene = ({ cameraMode, players = [] }: SceneProps) => {
+  const characterURL: string = "/models/My_Character.glb";
   const { position } = useControls("AK47 Gun", {
     position: { value: [-0.1, 0.4, 0.2], step: 0.1 },
   });
-  const INITIAL_POSITION = [
-    [0, 20, 0],
-    [5, 3, 5],
-  ];
+
   const VOL_DISTANCE = cameraMode === "first-person" ? 0.03 : 0.1;
 
   const RESPAWN_HEIGHT = -10;
-  const characterURL: string = "/models/My_Character.glb";
   const rigidBodyRef = useRef(null);
 
   const { positionX, positionY, positionZ } = {
@@ -41,21 +38,6 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
   useFrame(() => {
     if (rigidBodyRef.current) {
       handleCharacterRespawn(rigidBodyRef.current, [0, 20, 0], RESPAWN_HEIGHT);
-
-      //   const position = rigidBodyRef.current.translation();
-      //   const positionArray: [number, number, number] = [
-      //     position.x,
-      //     position.y,
-      //     position.z,
-      //   ];
-
-      //   setPlayerPositions(
-      //     {
-      //       ...playerPositions,
-      //       [myPlayer().id]: positionArray,
-      //     },
-      //     true
-      //   );
     }
   });
 

@@ -10,11 +10,12 @@ import ToggleCameraView from "./components/ui/ToggleCameraView";
 import { CameraMode } from "./types";
 import ControlCard from "./components/ui/ControlCard";
 import Crosshair from "./components/ui/Crosshair";
+import SocialsCard from "./components/ui/SocialsCard";
 
 const App = () => {
   const isMobile = () => window.innerWidth <= 768;
   const [cameraMode, setCameraMode] = useState<CameraMode>("third-person");
-  const [players, setPlayers] = useState<PlayerState[]>([]); // State to manage players
+  const [players, setPlayers] = useState<PlayerState[]>([]);
   const isHighPerformance = window.navigator.hardwareConcurrency > 4;
 
   useEffect(() => {
@@ -32,9 +33,11 @@ const App = () => {
       <div className="absolute z-10 w-fit top-2 left-2 ">
         <Leva fill collapsed />
       </div>
-      {cameraMode === "first-person" && <Crosshair />}
+
+      <SocialsCard />
 
       {isMobile() && <EcctrlJoystick buttonNumber={1} />}
+      {cameraMode === "first-person" && <Crosshair />}
 
       <div className="absolute z-10 space-y-2 top-2 right-2">
         {!isMobile() && <EscapeCursor />}
