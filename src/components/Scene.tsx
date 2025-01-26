@@ -7,7 +7,7 @@ import {
   PositionalAudio,
   Sky,
 } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
 import { useControls } from "leva";
@@ -17,8 +17,12 @@ import { handleCharacterRespawn } from "../utils/helper";
 import { AK47_GUN } from "./Ak47_GUN";
 import { DustMap } from "./Csgo_Dust_Map";
 import { MyCharacterModel } from "./MyCharacter";
+import { useGame } from "./useGame";
+import { Vector3 } from "three";
+import MouseController from "./MouseController";
 
 const Scene = ({ cameraMode, players = [] }: SceneProps) => {
+  const isFirstPerson = cameraMode === "first-person";
   const characterURL: string = "/models/My_Character.glb";
   const { position } = useControls("AK47 Gun", {
     position: { value: [-0.1, 0.4, 0.2], step: 0.1 },
@@ -35,11 +39,51 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
     positionZ: 29.5,
   };
 
-  useFrame(() => {
+  const { bullets, fire, removeBullet } = useGame();
+  const { camera } = useThree();
+  const BULLET_SPEED = 10;
+  const MAX_BULLET_DISTANCE = 100;
+  const MAX_BULLETS = 50;
+
+  useFrame((state, delta) => {
     if (rigidBodyRef.current) {
       handleCharacterRespawn(rigidBodyRef.current, [0, 20, 0], RESPAWN_HEIGHT);
     }
+
+    // Update bullet positions
+    bullets.forEach((bullet) => {
+      bullet.position.addScaledVector(bullet.direction, BULLET_SPEED * delta);
+
+      // Remove bullets that have traveled too far
+      const distanceFromOrigin = bullet.position.distanceTo(camera.position);
+      if (distanceFromOrigin > MAX_BULLET_DISTANCE) {
+        removeBullet(bullet.id);
+      }
+    });
   });
+
+  const handleFire = (button: number) => {
+    if (button === 0) {
+      if (isFirstPerson && bullets.length < MAX_BULLETS) {
+        // Calculate gun position in world space
+        const gunOffset = new Vector3(position[0], position[1], position[2]);
+
+        // Apply camera rotation to gun offset
+        gunOffset.applyQuaternion(camera.quaternion);
+
+        // Calculate final gun position
+        const gunPosition = new Vector3().copy(camera.position).add(gunOffset);
+
+        // Calculate direction based on camera's forward vector
+        const direction = new Vector3(0, 0, -1);
+        direction.applyQuaternion(camera.quaternion);
+
+        // Create the bullet with aligned position and direction
+        fire(camera, gunPosition, direction);
+      }
+    }
+  };
+  console.log(bullets);
 
   const keyboardMap: KeyboardControl[] = useMemo(
     () => [
@@ -68,6 +112,7 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
   return (
     <>
       <OrbitControls autoRotate maxPolarAngle={Math.PI / 2} />
+      {isFirstPerson && <MouseController onMouseClick={handleFire} />}
 
       <Environment preset="sunset" />
       <ambientLight intensity={0.5} />
@@ -97,6 +142,27 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
       <Physics timeStep="vary" debug={import.meta.env.DEV}>
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
 
+        {/* Bullets */}
+        <group>
+          {bullets.map((bullet) => (
+            <RigidBody
+              key={bullet.id}
+              type="fixed"
+              position={[
+                bullet.position.x,
+                bullet.position.y,
+                bullet.position.z,
+              ]}
+              colliders="ball"
+              sensor
+            >
+              <mesh>
+                <sphereGeometry args={[0.02]} />
+                <meshBasicMaterial color="#ffff00" toneMapped={false} />
+              </mesh>
+            </RigidBody>
+          ))}
+        </group>
         {/* {players.map((player, index) => {
           return player.id === myPlayer().id ? ( */}
         <KeyboardControls map={keyboardMap}>
@@ -121,7 +187,7 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
               slopeUpExtraForce={0.05}
               slopeDownExtraForce={0.1}
               // Camera settings
-              {...(cameraMode === "first-person"
+              {...(isFirstPerson
                 ? {
                     camCollision: false,
                     camInitDis: -0.0001,
@@ -151,11 +217,10 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
               >
                 <MyCharacterModel
                   scale={0.9}
-                  position={[0, -0.9, cameraMode === "first-person" ? -0.7 : 0]}
+                  position={[0, -0.9, isFirstPerson ? -0.7 : 0]}
+                  visible={!isFirstPerson}
                 />
-                {cameraMode === "first-person" && (
-                  <AK47_GUN scale={4} position={position} />
-                )}
+                {isFirstPerson && <AK47_GUN scale={4} position={position} />}
               </EcctrlAnimation>
               <PositionalAudio
                 url="/audios/CSGO_Theme.mp3"

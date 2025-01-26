@@ -6,9 +6,11 @@ interface GameState {
   animationSet: Record<string, string>;
   bullets: { position: Vector3; direction: Vector3; id: number }[];
   reset: () => void;
-  fire: (camera: Camera) => void;
+  fire: (camera: Camera, gunPosition: Vector3) => void;
   removeBullet: (id: number) => void;
 }
+
+// ... existing imports ...
 
 export const useGame = create<GameState>((set) => ({
   curAnimation: null,
@@ -16,44 +18,30 @@ export const useGame = create<GameState>((set) => ({
   bullets: [],
 
   reset: () => {
-    set((state) => ({ curAnimation: state.animationSet.idle }));
+    set((state) => ({
+      curAnimation: state.animationSet.idle,
+      bullets: [], // Clear bullets on reset
+    }));
   },
 
-  // Add firing action
-  fire: (camera) => {
+  fire: (camera, gunPosition, direction) => {
     set((state) => {
-      // Only fire if in idle, walk, or run animation
-      if (
-        state.curAnimation === state.animationSet.idle ||
-        state.curAnimation === state.animationSet.walk ||
-        state.curAnimation === state.animationSet.run
-      ) {
-        const ray = new Ray();
-        ray.origin.copy(camera.position);
-        ray.direction
-          .set(0, 0, -1)
-          .unproject(camera)
-          .sub(camera.position)
-          .normalize();
+      const newBullet = {
+        position: gunPosition.clone(),
+        direction: direction.clone().normalize(),
+        id: Date.now() + Math.random(),
+      };
 
-        return {
-          curAnimation: state.animationSet.action4, // Trigger firing animation
-          bullets: [
-            ...state.bullets,
-            {
-              position: new Vector3().copy(camera.position),
-              direction: new Vector3().copy(ray.direction),
-              id: Math.random(),
-            },
-          ],
-        };
-      }
-      return state;
+      // Keep only recent bullets
+      const bullets = [...state.bullets, newBullet].slice(-20);
+
+      return { bullets };
     });
   },
 
-  removeBullet: (id) =>
+  removeBullet: (id) => {
     set((state) => ({
       bullets: state.bullets.filter((bullet) => bullet.id !== id),
-    })),
+    }));
+  },
 }));
