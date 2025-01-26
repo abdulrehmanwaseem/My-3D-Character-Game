@@ -104,9 +104,9 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
         fire(camera, gunPosition, direction);
 
         setShowMuzzleFlash(true);
-        setShake(1);
         if (shootSoundRef.current) {
           shootSoundRef.current?.play();
+          setShake(1);
         }
 
         setTimeout(() => setShowMuzzleFlash(false), 250);
