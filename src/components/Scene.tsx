@@ -27,6 +27,8 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
   const [shake, setShake] = useState(0);
 
   const shootSoundRef = useRef();
+  const [canShoot, setCanShoot] = useState(true);
+  const shootCooldownRef = useRef(null);
 
   const isFirstPerson = cameraMode === "first-person";
   const characterURL: string = "/models/My_Character.glb";
@@ -57,17 +59,18 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
   const BULLET_SPEED = 100;
   const MAX_BULLET_DISTANCE = 600;
   const MAX_BULLETS = 30;
+  const BULLET_COOLDOWN = 900; // 500ms cooldown
 
   useFrame((__, delta) => {
     if (rigidBodyRef.current) {
       handleCharacterRespawn(rigidBodyRef.current, [0, 20, 0], RESPAWN_HEIGHT);
     }
 
-    if (shake > 0) {
-      camera.position.x += Math.random() * shake * 0.1;
-      camera.position.y += Math.random() * shake * 0.1;
-      setShake(Math.max(0, shake - delta * 5));
-    }
+    const shakeAmount = shake * 0.1;
+    camera.position.x += Math.random() * shakeAmount - shakeAmount / 2;
+    camera.position.y += Math.random() * shakeAmount - shakeAmount / 2;
+
+    setShake((prev) => Math.max(0, prev - delta * 5));
     // Update bullet positions
     bullets.forEach((bullet) => {
       bullet.position.addScaledVector(bullet.direction, BULLET_SPEED * delta);
@@ -81,36 +84,39 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
   });
 
   const handleFire = (button: number) => {
-    if (button === 0) {
-      if (isFirstPerson && bullets.length < MAX_BULLETS) {
-        // Calculate gun position in world space
-        const gunOffset = new Vector3(position[0], position[1], position[2]);
+    if (button === 0 && canShoot) {
+      setCanShoot(false); // Prevent further shots during cooldown
 
-        // Apply camera rotation to gun offset
+      if (isFirstPerson && bullets.length < MAX_BULLETS) {
+        const gunOffset = new Vector3(position[0], position[1], position[2]);
         gunOffset.applyQuaternion(camera.quaternion);
 
-        // Calculate final gun position - adjust Y position to be slightly lower
         const gunPosition = new Vector3()
           .copy(camera.position)
           .add(gunOffset)
           .setY(camera.position.y - 0.01)
-          .setX(camera.position.x - 0.075); // Lowered by 0.1 units, adjust this value as needed
+          .setX(camera.position.x - 0.075);
 
-        // Calculate direction based on camera's forward vector
         const direction = new Vector3(0, 0, -1);
         direction.applyQuaternion(camera.quaternion);
 
-        // Create the bullet with aligned position and direction
         fire(camera, gunPosition, direction);
 
         setShowMuzzleFlash(true);
         if (shootSoundRef.current) {
           shootSoundRef.current?.play();
-          setShake(1);
         }
+        setShake(1);
 
         setTimeout(() => setShowMuzzleFlash(false), 250);
       }
+
+      // Reset the cooldown
+      clearTimeout(shootCooldownRef.current);
+      shootCooldownRef.current = setTimeout(
+        () => setCanShoot(true),
+        BULLET_COOLDOWN
+      );
     }
   };
   console.log(bullets);
@@ -186,16 +192,17 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
               colliders="ball"
               sensor
             >
-              <mesh>
-                <sphereGeometry args={[0.08]} />
-                <meshBasicMaterial color="#ffff00" toneMapped={false} />
-              </mesh>
               <Trail
                 width={0.05}
                 length={8}
                 color={"#ffff00"}
                 attenuation={(t) => t * t}
-              />
+              >
+                <mesh>
+                  <sphereGeometry args={[0.08]} />
+                  <meshBasicMaterial color="#ffff00" toneMapped={false} />
+                </mesh>
+              </Trail>
             </RigidBody>
           </group>
         ))}
