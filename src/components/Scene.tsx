@@ -19,17 +19,57 @@ import { AK47_GUN } from "./Ak47_GUN";
 import { DustMap } from "./Csgo_Dust_Map";
 import { MyCharacterModel } from "./MyCharacter";
 import { useGame } from "./useGame";
-import { Vector3 } from "three";
+import { Audio, Vector3 } from "three";
 import MouseController from "./MouseController";
 
 const Scene = ({ cameraMode, players = [] }: SceneProps) => {
   const [showMuzzleFlash, setShowMuzzleFlash] = useState(false);
   const [shake, setShake] = useState(0);
 
+  const shootSound = useRef(new Audio("/audios/gunshot.mp3"));
+
   const isFirstPerson = cameraMode === "first-person";
   const characterURL: string = "/models/My_Character.glb";
   const { position } = useControls("AK47 Gun", {
     position: { value: [-0.1, 0.4, 0.2], step: 0.1 },
+  });
+  const {
+    muzzleFlashPosition,
+    muzzleFlashIntensity,
+    muzzleFlashDistance,
+    muzzleFlashColor,
+    muzzleFlashDuration,
+  } = useControls("Muzzle Flash", {
+    muzzleFlashPosition: {
+      value: [0, 0.2, 0.1],
+      step: 0.1,
+      label: "Position Offset",
+    },
+    muzzleFlashIntensity: {
+      value: 3,
+      min: 0,
+      max: 10,
+      step: 0.1,
+      label: "Intensity",
+    },
+    muzzleFlashDistance: {
+      value: 2,
+      min: 0,
+      max: 5,
+      step: 0.1,
+      label: "Distance",
+    },
+    muzzleFlashColor: {
+      value: "#ffff00",
+      label: "Color",
+    },
+    muzzleFlashDuration: {
+      value: 50,
+      min: 10,
+      max: 200,
+      step: 10,
+      label: "Duration (ms)",
+    },
   });
 
   const VOL_DISTANCE = cameraMode === "first-person" ? 0.03 : 0.1;
@@ -55,11 +95,10 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
     }
 
     if (shake > 0) {
-      camera.position.x += Math.random() * shake * 0.1;
-      camera.position.y += Math.random() * shake * 0.1;
+      camera.position.x += (Math.random() - 0.5) * shake * 0.1;
+      camera.position.y += (Math.random() - 0.5) * shake * 0.1;
       setShake(Math.max(0, shake - delta * 5));
     }
-
     // Update bullet positions
     bullets.forEach((bullet) => {
       bullet.position.addScaledVector(bullet.direction, BULLET_SPEED * delta);
@@ -98,7 +137,7 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
         setShowMuzzleFlash(true);
         setShake(0.5);
 
-        setTimeout(() => setShowMuzzleFlash(false), 50);
+        setTimeout(() => setShowMuzzleFlash(false), 150);
       }
     }
   };
@@ -251,13 +290,13 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
                 {showMuzzleFlash && (
                   <pointLight
                     position={[
-                      position[0],
-                      position[1] + 0.2,
-                      position[2] + 0.1,
+                      position[0] + muzzleFlashPosition[0],
+                      position[1] + muzzleFlashPosition[1],
+                      position[2] + muzzleFlashPosition[2],
                     ]}
-                    intensity={3}
-                    distance={2}
-                    color="#ffff00"
+                    intensity={muzzleFlashIntensity}
+                    distance={muzzleFlashDistance}
+                    color={muzzleFlashColor}
                   />
                 )}
               </EcctrlAnimation>
