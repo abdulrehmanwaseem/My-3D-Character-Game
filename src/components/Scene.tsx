@@ -35,7 +35,7 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
   });
   const { muzzleFlashPosition } = useControls("Muzzle Flash", {
     muzzleFlashPosition: {
-      value: [0, 0.2, 0.1],
+      value: [-0.1, 0.4, 0.6],
       step: 0.1,
       label: "Position Offset",
     },
@@ -58,7 +58,7 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
   const MAX_BULLET_DISTANCE = 500;
   const MAX_BULLETS = 30;
 
-  useFrame((state, delta) => {
+  useFrame((__, delta) => {
     if (rigidBodyRef.current) {
       handleCharacterRespawn(rigidBodyRef.current, [0, 20, 0], RESPAWN_HEIGHT);
     }
@@ -104,12 +104,12 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
         fire(camera, gunPosition, direction);
 
         setShowMuzzleFlash(true);
+        setShake(0.8);
         if (shootSoundRef.current) {
-          shootSoundRef.current.play();
+          shootSoundRef.current?.play();
         }
-        setShake(1);
 
-        setTimeout(() => setShowMuzzleFlash(false), 200);
+        setTimeout(() => setShowMuzzleFlash(false), 250);
       }
     }
   };
