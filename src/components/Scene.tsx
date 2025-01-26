@@ -54,8 +54,8 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
 
   const { bullets, fire, removeBullet } = useGame();
   const { camera } = useThree();
-  const BULLET_SPEED = 30;
-  const MAX_BULLET_DISTANCE = 500;
+  const BULLET_SPEED = 100;
+  const MAX_BULLET_DISTANCE = 600;
   const MAX_BULLETS = 30;
 
   useFrame((__, delta) => {
@@ -104,7 +104,7 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
         fire(camera, gunPosition, direction);
 
         setShowMuzzleFlash(true);
-        setShake(0.8);
+        setShake(1);
         if (shootSoundRef.current) {
           shootSoundRef.current?.play();
         }
@@ -189,7 +189,7 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
               sensor
             >
               <mesh>
-                <sphereGeometry args={[0.02]} />
+                <sphereGeometry args={[0.08]} />
                 <meshBasicMaterial color="#ffff00" toneMapped={false} />
               </mesh>
               <Trail
@@ -269,6 +269,7 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
                     distance={1}
                     loop={false}
                     autoplay={false}
+                    setVolume={0.2}
                   />
                   {showMuzzleFlash && (
                     <pointLight
