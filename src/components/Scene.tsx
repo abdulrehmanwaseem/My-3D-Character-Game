@@ -6,12 +6,13 @@ import {
   OrthographicCamera,
   PositionalAudio,
   Sky,
+  Trail,
 } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
 import { useControls } from "leva";
-import { Suspense, useMemo, useRef } from "react";
+import { Suspense, useMemo, useRef, useState } from "react";
 import { AnimationSet, KeyboardControl, SceneProps } from "../types";
 import { handleCharacterRespawn } from "../utils/helper";
 import { AK47_GUN } from "./Ak47_GUN";
@@ -22,6 +23,9 @@ import { Vector3 } from "three";
 import MouseController from "./MouseController";
 
 const Scene = ({ cameraMode, players = [] }: SceneProps) => {
+  const [showMuzzleFlash, setShowMuzzleFlash] = useState(false);
+  const [shake, setShake] = useState(0);
+
   const isFirstPerson = cameraMode === "first-person";
   const characterURL: string = "/models/My_Character.glb";
   const { position } = useControls("AK47 Gun", {
@@ -41,13 +45,19 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
 
   const { bullets, fire, removeBullet } = useGame();
   const { camera } = useThree();
-  const BULLET_SPEED = 10;
-  const MAX_BULLET_DISTANCE = 100;
-  const MAX_BULLETS = 50;
+  const BULLET_SPEED = 20;
+  const MAX_BULLET_DISTANCE = 120;
+  const MAX_BULLETS = 30;
 
   useFrame((state, delta) => {
     if (rigidBodyRef.current) {
       handleCharacterRespawn(rigidBodyRef.current, [0, 20, 0], RESPAWN_HEIGHT);
+    }
+
+    if (shake > 0) {
+      camera.position.x += Math.random() * shake * 0.1;
+      camera.position.y += Math.random() * shake * 0.1;
+      setShake(Math.max(0, shake - delta * 5));
     }
 
     // Update bullet positions
@@ -71,8 +81,12 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
         // Apply camera rotation to gun offset
         gunOffset.applyQuaternion(camera.quaternion);
 
-        // Calculate final gun position
-        const gunPosition = new Vector3().copy(camera.position).add(gunOffset);
+        // Calculate final gun position - adjust Y position to be slightly lower
+        const gunPosition = new Vector3()
+          .copy(camera.position)
+          .add(gunOffset)
+          .setY(camera.position.y - 0.01)
+          .setX(camera.position.x - 0.075); // Lowered by 0.1 units, adjust this value as needed
 
         // Calculate direction based on camera's forward vector
         const direction = new Vector3(0, 0, -1);
@@ -80,6 +94,11 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
 
         // Create the bullet with aligned position and direction
         fire(camera, gunPosition, direction);
+
+        setShowMuzzleFlash(true);
+        setShake(0.5);
+
+        setTimeout(() => setShowMuzzleFlash(false), 50);
       }
     }
   };
@@ -139,14 +158,16 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
         />
       </directionalLight>
 
-      <Physics timeStep="vary" debug={import.meta.env.DEV}>
+      <Physics
+        timeStep="vary"
+        // debug={import.meta.env.DEV}
+      >
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
 
         {/* Bullets */}
-        <group>
-          {bullets.map((bullet) => (
+        {bullets.map((bullet) => (
+          <group key={bullet.id}>
             <RigidBody
-              key={bullet.id}
               type="fixed"
               position={[
                 bullet.position.x,
@@ -160,9 +181,15 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
                 <sphereGeometry args={[0.02]} />
                 <meshBasicMaterial color="#ffff00" toneMapped={false} />
               </mesh>
+              <Trail
+                width={0.05}
+                length={8}
+                color={"#ffff00"}
+                attenuation={(t) => t * t}
+              />
             </RigidBody>
-          ))}
-        </group>
+          </group>
+        ))}
         {/* {players.map((player, index) => {
           return player.id === myPlayer().id ? ( */}
         <KeyboardControls map={keyboardMap}>
@@ -221,6 +248,18 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
                   visible={!isFirstPerson}
                 />
                 {isFirstPerson && <AK47_GUN scale={4} position={position} />}
+                {showMuzzleFlash && (
+                  <pointLight
+                    position={[
+                      position[0],
+                      position[1] + 0.2,
+                      position[2] + 0.1,
+                    ]}
+                    intensity={3}
+                    distance={2}
+                    color="#ffff00"
+                  />
+                )}
               </EcctrlAnimation>
               <PositionalAudio
                 url="/audios/CSGO_Theme.mp3"
