@@ -106,7 +106,7 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
         if (shootSoundRef.current) {
           shootSoundRef.current?.play();
         }
-        setShake(1);
+        setShake(2);
 
         setTimeout(() => setShowMuzzleFlash(false), 250);
       }
