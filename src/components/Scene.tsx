@@ -54,8 +54,8 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
 
   const { bullets, fire, removeBullet } = useGame();
   const { camera } = useThree();
-  const BULLET_SPEED = 20;
-  const MAX_BULLET_DISTANCE = 120;
+  const BULLET_SPEED = 50;
+  const MAX_BULLET_DISTANCE = 500;
   const MAX_BULLETS = 30;
 
   useFrame((state, delta) => {
@@ -107,7 +107,7 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
         if (shootSoundRef.current) {
           shootSoundRef.current.play();
         }
-        setShake(0.7);
+        setShake(0.9);
 
         setTimeout(() => setShowMuzzleFlash(false), 150);
       }
