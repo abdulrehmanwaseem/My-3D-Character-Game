@@ -30,7 +30,7 @@ const App = () => {
 
   return (
     <Suspense fallback={<Loader />}>
-      <div className="absolute z-10 w-fit top-2 left-2 ">
+      <div className="absolute z-10 w-fit top-2 left-2">
         <Leva fill collapsed />
       </div>
 

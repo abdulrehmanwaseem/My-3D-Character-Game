@@ -49,9 +49,7 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
       { name: "rightward", keys: ["ArrowRight", "KeyD"] },
       { name: "jump", keys: ["Space"] },
       { name: "run", keys: ["Shift"] },
-      { name: "action1", keys: ["KeyE"] }, // Left click
-      { name: "action2", keys: ["KeyF"] },
-      { name: "action3", keys: ["Mouse2"] },
+      { name: "action1", keys: ["KeyE"] },
     ],
     []
   );
@@ -65,8 +63,6 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
     jumpLand: "Idle",
     fall: "Jump",
     action1: "Dying",
-    action2: "Dying",
-    action3: "Dying",
   };
 
   return (
@@ -98,10 +94,7 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
         />
       </directionalLight>
 
-      <Physics
-        timeStep="vary"
-        //  debug={import.meta.env.DEV}
-      >
+      <Physics timeStep="vary" debug={import.meta.env.DEV}>
         <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
 
         {/* {players.map((player, index) => {
@@ -154,7 +147,7 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
               <EcctrlAnimation
                 characterURL={characterURL}
                 animationSet={animationSet}
-                key={`animation-${cameraMode}`}
+                key={cameraMode}
               >
                 <MyCharacterModel
                   scale={0.9}

@@ -1,13 +1,12 @@
 import { create } from "zustand";
-import { Ray, Vector3 } from "three";
+import { Ray, Vector3, Camera } from "three";
 
 interface GameState {
   curAnimation: string | null;
   animationSet: Record<string, string>;
   bullets: { position: Vector3; direction: Vector3; id: number }[];
-  initializeAnimationSet: (newAnimationSet: Record<string, string>) => void;
   reset: () => void;
-  fire: (camera: THREE.Camera) => void;
+  fire: (camera: Camera) => void;
   removeBullet: (id: number) => void;
 }
 
@@ -15,10 +14,6 @@ export const useGame = create<GameState>((set) => ({
   curAnimation: null,
   animationSet: {},
   bullets: [],
-
-  initializeAnimationSet: (newAnimationSet) => {
-    set({ animationSet: newAnimationSet });
-  },
 
   reset: () => {
     set((state) => ({ curAnimation: state.animationSet.idle }));
