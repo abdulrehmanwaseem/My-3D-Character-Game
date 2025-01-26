@@ -148,8 +148,6 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
       <ambientLight intensity={0.5} />
       <Sky sunPosition={[100, 20, 100]} />
 
-      <Cloud position={[0, 11, 20]} speed={0.5} opacity={0.3} color="#d3d3d3" />
-
       <directionalLight
         intensity={1.5}
         castShadow
