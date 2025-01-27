@@ -30,8 +30,14 @@ const App = () => {
 
   return (
     <Suspense fallback={<Loader />}>
-      <div className="absolute z-10 w-fit top-2 left-2">
+      <div className="absolute z-10 flex flex-col space-y-2 top-2 left-2">
         <Leva fill collapsed />
+        {cameraMode === "first-person" && (
+          <ControlCard
+            text="Press right click btn to shoot"
+            keyboardKey={"RMB"}
+          />
+        )}
       </div>
 
       <SocialsCard />
