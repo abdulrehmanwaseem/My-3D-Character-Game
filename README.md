@@ -27,6 +27,9 @@ This project features my personal 3D face model as the main character, set in a 
 - **Custom 3D Character:** The main character is modeled with my own 3D face, offering a personal touch.
 - **Third-Person Controller & Camera:** A smooth, customized third-person view with full control of movement.
 - **Recreated CS:GO Dust Map:** Explore a faithfully recreated version of the Dust map, providing nostalgic gameplay.
+- **AK-47 Firing:** Added a realistic AK-47 model with firing mechanics, including bullet projectiles and dynamic effects.
+- **Lighting Effects:** Real-time light effects during firing to enhance visual realism.
+- **Recoil & Shake Effects:** Camera shake and recoil effects add intensity and immersion during gameplay.
 - **Real-Time Physics:** Powered by React-Three/Rapier, enabling realistic physical interactions in the game world.
 - **Camera Toggle:** The game has camera toggle option for switching between 3rd person to 1st person.
 - **Immersive 3D Environment:** Built with React-Three-Fiber and Three.js for high-quality 3D rendering and interactivity.
