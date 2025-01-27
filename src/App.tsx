@@ -15,6 +15,7 @@ import SocialsCard from "./components/ui/SocialsCard";
 const App = () => {
   const isMobile = () => window.innerWidth <= 768;
   const [cameraMode, setCameraMode] = useState<CameraMode>("third-person");
+  const isFirstPerson = cameraMode === "first-person";
   const [players, setPlayers] = useState<PlayerState[]>([]);
   const isHighPerformance = window.navigator.hardwareConcurrency > 4;
 
@@ -32,7 +33,7 @@ const App = () => {
     <Suspense fallback={<Loader />}>
       <div className="absolute z-10 flex flex-col space-y-2 top-2 left-2">
         <Leva fill collapsed />
-        {cameraMode === "first-person" && (
+        {isFirstPerson && (
           <ControlCard
             text="Press right click btn to shoot"
             keyboardKey={"RMB"}
@@ -43,7 +44,7 @@ const App = () => {
       <SocialsCard />
 
       {isMobile() && <EcctrlJoystick buttonNumber={1} />}
-      {cameraMode === "first-person" && <Crosshair />}
+      {isFirstPerson && <Crosshair />}
 
       <div className="absolute z-10 space-y-2 top-2 right-2">
         {!isMobile() && <EscapeCursor />}
@@ -67,7 +68,11 @@ const App = () => {
           }
         }}
       >
-        <Scene cameraMode={cameraMode} players={[]} />
+        <Scene
+          cameraMode={cameraMode}
+          isFirstPerson={isFirstPerson}
+          players={[]}
+        />
       </Canvas>
       <img
         className="absolute hidden select-none lg:p-5 bg-slate-800/80 backdrop-blur-sm lg:w-60 md:w-40 md:p-3 rounded-xl left-5 bottom-5 md:block"

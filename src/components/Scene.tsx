@@ -22,7 +22,11 @@ import { useGame } from "./useGame";
 import { Audio, Vector3 } from "three";
 import MouseController from "./MouseController";
 
-const Scene = ({ cameraMode, players = [] }: SceneProps) => {
+const Scene = ({
+  cameraMode,
+  players = [],
+  isFirstPerson = false,
+}: SceneProps) => {
   const [showMuzzleFlash, setShowMuzzleFlash] = useState(false);
   const [shake, setShake] = useState(0);
 
@@ -30,7 +34,6 @@ const Scene = ({ cameraMode, players = [] }: SceneProps) => {
   const [canShoot, setCanShoot] = useState(true);
   const shootCooldownRef = useRef(null);
 
-  const isFirstPerson = cameraMode === "first-person";
   const characterURL: string = "/models/My_Character.glb";
   const { position } = useControls("AK47 Gun", {
     position: { value: [-0.1, 0.4, 0.2], step: 0.1 },
