@@ -7,12 +7,20 @@ import {
   PositionalAudio,
   Sky,
   Trail,
+  useGLTF,
 } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
 import { useControls } from "leva";
-import { Suspense, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { AnimationSet, KeyboardControl, SceneProps } from "../types";
 import { handleCharacterRespawn } from "../utils/helper";
 import { AK47_GUN } from "./Ak47_GUN";
@@ -22,22 +30,65 @@ import { useGame } from "./useGame";
 import { Audio, Vector3 } from "three";
 import MouseController from "./MouseController";
 
+// Constants
+const BULLET_CONFIG = {
+  SPEED: 100,
+  MAX_DISTANCE: 600,
+  MAX_COUNT: 30,
+  COOLDOWN: 900, // Reduced cooldown for better responsiveness
+  SIZE: 0.08,
+  TRAIL_WIDTH: 0.05,
+  TRAIL_LENGTH: 8,
+  COLOR: "#ffff00",
+} as const;
+
+const CAMERA_CONFIG = {
+  FIRST_PERSON: {
+    camCollision: false,
+    camInitDis: -0.0001,
+    camMinDis: 0.0001,
+    camMaxDis: 0.0001,
+    camFollowMult: 1000,
+    camLerpMult: 1000,
+    turnVelMultiplier: 1,
+    turnSpeed: 100,
+    mode: "CameraBasedMovement",
+    smoothTime: 0.15,
+    camInitDir: { x: 0, y: 0 },
+  },
+  THIRD_PERSON: {
+    camInitDis: -3.5,
+    camMaxDis: -6,
+    camMinDis: -1,
+    camUpLimit: 1.2,
+    camLowLimit: -0.8,
+    camInitDir: { x: 0.2, y: 0 },
+  },
+} as const;
+
 const Scene = ({
   cameraMode,
   players = [],
   isFirstPerson = false,
 }: SceneProps) => {
+  // Refs
+  const rigidBodyRef = useRef(null);
+  const shootSoundRef = useRef<Audio>(null);
+  const lastShootTime = useRef(0);
+
+  // State
   const [showMuzzleFlash, setShowMuzzleFlash] = useState(false);
-  const [shake, setShake] = useState(0);
+  const [cameraShake, setCameraShake] = useState(0);
 
-  const shootSoundRef = useRef();
-  const [canShoot, setCanShoot] = useState(true);
-  const shootCooldownRef = useRef(null);
+  // Hooks
+  const { camera } = useThree();
+  const { bullets, fire, removeBullet } = useGame();
 
-  const characterURL: string = "/models/My_Character.glb";
+  // Controls
   const { position } = useControls("AK47 Gun", {
     position: { value: [-0.1, 0.4, 0.2], step: 0.1 },
   });
+
   const { muzzleFlashPosition } = useControls("Muzzle Flash", {
     muzzleFlashPosition: {
       value: [-0.1, 0.4, 0.6],
@@ -46,85 +97,15 @@ const Scene = ({
     },
   });
 
-  const VOL_DISTANCE = cameraMode === "first-person" ? 0.03 : 0.1;
+  // Memoized values
+  const VOL_DISTANCE = useMemo(
+    () => (cameraMode === "first-person" ? 0.03 : 0.1),
+    [cameraMode]
+  );
 
-  const RESPAWN_HEIGHT = -10;
-  const rigidBodyRef = useRef(null);
+  const spawnPosition = useMemo(() => new Vector3(0, 20, 0), []);
 
-  const { positionX, positionY, positionZ } = {
-    positionX: -14,
-    positionY: 0,
-    positionZ: 29.5,
-  };
-
-  const { bullets, fire, removeBullet } = useGame();
-  const { camera } = useThree();
-  const BULLET_SPEED = 100;
-  const MAX_BULLET_DISTANCE = 600;
-  const MAX_BULLETS = 30;
-  const BULLET_COOLDOWN = 900; // 500ms cooldown
-
-  useFrame((__, delta) => {
-    if (rigidBodyRef.current) {
-      handleCharacterRespawn(rigidBodyRef.current, [0, 20, 0], RESPAWN_HEIGHT);
-    }
-
-    const shakeAmount = shake * 0.1;
-    camera.position.x += Math.random() * shakeAmount - shakeAmount / 2;
-    camera.position.y += Math.random() * shakeAmount - shakeAmount / 2;
-
-    setShake((prev) => Math.max(0, prev - delta * 5));
-    // Update bullet positions
-    bullets.forEach((bullet) => {
-      bullet.position.addScaledVector(bullet.direction, BULLET_SPEED * delta);
-
-      // Remove bullets that have traveled too far
-      const distanceFromOrigin = bullet.position.distanceTo(camera.position);
-      if (distanceFromOrigin > MAX_BULLET_DISTANCE) {
-        removeBullet(bullet.id);
-      }
-    });
-  });
-
-  const handleFire = (button: number) => {
-    if (button === 0 && canShoot) {
-      setCanShoot(false); // Prevent further shots during cooldown
-
-      if (isFirstPerson && bullets.length < MAX_BULLETS) {
-        const gunOffset = new Vector3(position[0], position[1], position[2]);
-        gunOffset.applyQuaternion(camera.quaternion);
-
-        const gunPosition = new Vector3()
-          .copy(camera.position)
-          .add(gunOffset)
-          .setY(camera.position.y - 0.01)
-          .setX(camera.position.x - 0.075);
-
-        const direction = new Vector3(0, 0, -1);
-        direction.applyQuaternion(camera.quaternion);
-
-        fire(camera, gunPosition, direction);
-
-        setShowMuzzleFlash(true);
-        if (shootSoundRef.current) {
-          shootSoundRef.current?.play();
-        }
-        setShake(2);
-
-        setTimeout(() => setShowMuzzleFlash(false), 250);
-      }
-
-      // Reset the cooldown
-      clearTimeout(shootCooldownRef.current);
-      shootCooldownRef.current = setTimeout(
-        () => setCanShoot(true),
-        BULLET_COOLDOWN
-      );
-    }
-  };
-  console.log(bullets);
-
-  const keyboardMap: KeyboardControl[] = useMemo(
+  const keyboardMap = useMemo<KeyboardControl[]>(
     () => [
       { name: "forward", keys: ["ArrowUp", "KeyW"] },
       { name: "backward", keys: ["ArrowDown", "KeyS"] },
@@ -137,16 +118,91 @@ const Scene = ({
     []
   );
 
-  const animationSet: AnimationSet = {
-    idle: "Idle",
-    walk: "Walk",
-    run: "Sprint",
-    jump: "Jump",
-    jumpIdle: "Jump",
-    jumpLand: "Idle",
-    fall: "Jump",
-    action1: "Dying",
-  };
+  const animationSet: AnimationSet = useMemo(
+    () => ({
+      idle: "Idle",
+      walk: "Walk",
+      run: "Sprint",
+      jump: "Jump",
+      jumpIdle: "Jump",
+      jumpLand: "Idle",
+      fall: "Jump",
+      action1: "Dying",
+    }),
+    []
+  );
+
+  // Preload character model
+  useGLTF("/models/My_Character.glb");
+
+  // Handle firing logic
+  const handleFire = useCallback(
+    (button: number) => {
+      if (
+        button !== 0 ||
+        !isFirstPerson ||
+        bullets.length >= BULLET_CONFIG.MAX_COUNT
+      )
+        return;
+
+      const now = performance.now();
+      if (now - lastShootTime.current < BULLET_CONFIG.COOLDOWN) return;
+
+      lastShootTime.current = now;
+
+      const gunOffset = new Vector3(...position);
+      gunOffset.applyQuaternion(camera.quaternion);
+
+      const gunPosition = new Vector3()
+        .copy(camera.position)
+        .add(gunOffset)
+        .setY(camera.position.y - 0.01)
+        .setX(camera.position.x - 0.075);
+
+      const direction = new Vector3(0, 0, -1).applyQuaternion(
+        camera.quaternion
+      );
+
+      fire(camera, gunPosition, direction);
+      shootSoundRef.current?.play();
+
+      setShowMuzzleFlash(true);
+      setCameraShake(0.6);
+
+      setTimeout(() => setShowMuzzleFlash(false), 50);
+    },
+    [bullets.length, camera, fire, isFirstPerson, position]
+  );
+
+  // Frame updates
+  useFrame((_, delta) => {
+    // Handle respawn
+    if (rigidBodyRef.current) {
+      handleCharacterRespawn(rigidBodyRef.current, spawnPosition, -10);
+    }
+
+    // Camera shake
+    if (cameraShake > 0) {
+      const shakeAmount = cameraShake * 0.1;
+      camera.position.x += (Math.random() - 0.5) * shakeAmount;
+      camera.position.y += (Math.random() - 0.5) * shakeAmount;
+      setCameraShake(Math.max(0, cameraShake - delta * 5));
+    }
+
+    // Update bullets
+    bullets.forEach((bullet) => {
+      bullet.position.addScaledVector(
+        bullet.direction,
+        BULLET_CONFIG.SPEED * delta
+      );
+
+      if (
+        bullet.position.distanceTo(camera.position) > BULLET_CONFIG.MAX_DISTANCE
+      ) {
+        removeBullet(bullet.id);
+      }
+    });
+  });
 
   return (
     <>
@@ -176,89 +232,59 @@ const Scene = ({
         />
       </directionalLight>
 
-      <Physics
-        timeStep="vary"
-        // debug={import.meta.env.DEV}
-      >
-        <DustMap scale={0.7} position={[positionX, positionY, positionZ]} />
+      <Physics timeStep="vary">
+        <DustMap scale={0.7} position={[-14, 0, 29.5]} />
 
         {/* Bullets */}
         {bullets.map((bullet) => (
-          <group key={bullet.id}>
-            <RigidBody
-              type="fixed"
-              position={[
-                bullet.position.x,
-                bullet.position.y,
-                bullet.position.z,
-              ]}
-              colliders="ball"
-              sensor
+          <RigidBody
+            key={bullet.id}
+            type="fixed"
+            position={[bullet.position.x, bullet.position.y, bullet.position.z]}
+            colliders="ball"
+            sensor
+          >
+            <Trail
+              width={BULLET_CONFIG.TRAIL_WIDTH}
+              length={BULLET_CONFIG.TRAIL_LENGTH}
+              color={BULLET_CONFIG.COLOR}
+              attenuation={(t) => t * t}
             >
-              <Trail
-                width={0.05}
-                length={8}
-                color={"#ffff00"}
-                attenuation={(t) => t * t}
-              >
-                <mesh>
-                  <sphereGeometry args={[0.08]} />
-                  <meshBasicMaterial color="#ffff00" toneMapped={false} />
-                </mesh>
-              </Trail>
-            </RigidBody>
-          </group>
+              <mesh>
+                <sphereGeometry args={[BULLET_CONFIG.SIZE]} />
+                <meshBasicMaterial
+                  color={BULLET_CONFIG.COLOR}
+                  toneMapped={false}
+                />
+              </mesh>
+            </Trail>
+          </RigidBody>
         ))}
 
-        {/* {players.map((player, index) => {
-          return player.id === myPlayer().id ? ( */}
         <KeyboardControls map={keyboardMap}>
           <Suspense fallback={null}>
             <Ecctrl
               ref={rigidBodyRef}
               key={cameraMode}
               animated
-              // lockRotations
-              position={[0, 20, 0]}
+              position={spawnPosition}
               capsuleHalfHeight={0.5}
               capsuleRadius={0.32}
               floatHeight={0.12}
               jumpVel={3}
               maxVelLimit={3}
               moveImpulsePointY={0}
-              // Auto-balance adjustments
               autoBalanceSpringK={0.7}
               autoBalanceDampingC={0.08}
-              // Slope handling
               slopeMaxAngle={0.8}
               slopeUpExtraForce={0.05}
               slopeDownExtraForce={0.1}
-              // Camera settings
               {...(isFirstPerson
-                ? {
-                    camCollision: false,
-                    camInitDis: -0.0001,
-                    camMinDis: 0.0001,
-                    camMaxDis: 0.0001,
-                    camFollowMult: 1000,
-                    camLerpMult: 1000,
-                    turnVelMultiplier: 1,
-                    turnSpeed: 100,
-                    mode: "CameraBasedMovement",
-                    smoothTime: 0.15,
-                    camInitDir: { x: 0, y: 0 },
-                  }
-                : {
-                    camInitDis: -3.5,
-                    camMaxDis: -6,
-                    camMinDis: -1,
-                    camUpLimit: 1.2,
-                    camLowLimit: -0.8,
-                    camInitDir: { x: 0.2, y: 0 },
-                  })}
+                ? CAMERA_CONFIG.FIRST_PERSON
+                : CAMERA_CONFIG.THIRD_PERSON)}
             >
               <EcctrlAnimation
-                characterURL={characterURL}
+                characterURL="/models/My_Character.glb"
                 animationSet={animationSet}
                 key={cameraMode}
               >
@@ -269,6 +295,7 @@ const Scene = ({
                 />
                 {isFirstPerson && <AK47_GUN scale={4} position={position} />}
               </EcctrlAnimation>
+
               {isFirstPerson && (
                 <>
                   <PositionalAudio
@@ -288,11 +315,12 @@ const Scene = ({
                       ]}
                       intensity={3}
                       distance={2}
-                      color="#ffff00"
+                      color={BULLET_CONFIG.COLOR}
                     />
                   )}
                 </>
               )}
+
               <PositionalAudio
                 url="/audios/CSGO_Theme.mp3"
                 distance={VOL_DISTANCE}
@@ -305,7 +333,7 @@ const Scene = ({
 
         {/* Box */}
         <Suspense fallback={null}>
-          <RigidBody key={`remote`} position={[5, 3, 5]} canSleep={false}>
+          <RigidBody position={[5, 3, 5]} canSleep={false}>
             <mesh castShadow receiveShadow>
               <boxGeometry args={[1, 1, 1]} />
               <meshStandardMaterial
@@ -314,11 +342,10 @@ const Scene = ({
                 emissiveIntensity={1}
                 metalness={0.2}
                 roughness={0.1}
-                transparent={true}
+                transparent
                 opacity={0.8}
               />
             </mesh>
-
             <pointLight
               position={[0, 0, 0]}
               intensity={2}
