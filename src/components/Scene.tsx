@@ -1,5 +1,4 @@
 import {
-  Cloud,
   Environment,
   KeyboardControls,
   OrbitControls,
@@ -13,30 +12,23 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import Ecctrl, { EcctrlAnimation } from "ecctrl";
 import { useControls } from "leva";
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Suspense, useCallback, useMemo, useRef, useState } from "react";
+import { Audio, Vector3 } from "three";
 import { AnimationSet, KeyboardControl, SceneProps } from "../types";
 import { handleCharacterRespawn } from "../utils/helper";
 import { AK47_GUN } from "./Ak47_GUN";
 import { DustMap } from "./Csgo_Dust_Map";
+import MouseController from "./MouseController";
 import { MyCharacterModel } from "./MyCharacter";
 import { useGame } from "./useGame";
-import { Audio, Vector3 } from "three";
-import MouseController from "./MouseController";
 
 // Constants
 const BULLET_CONFIG = {
-  SPEED: 100,
-  MAX_DISTANCE: 600,
+  SPEED: 150,
+  MAX_DISTANCE: 1000,
   MAX_COUNT: 30,
-  COOLDOWN: 900, // Reduced cooldown for better responsiveness
-  SIZE: 0.08,
+  COOLDOWN: 900, 
+  SIZE: 0.9,
   TRAIL_WIDTH: 0.05,
   TRAIL_LENGTH: 8,
   COLOR: "#ffff00",
@@ -169,7 +161,7 @@ const Scene = ({
       setShowMuzzleFlash(true);
       setCameraShake(0.6);
 
-      setTimeout(() => setShowMuzzleFlash(false), 50);
+      setTimeout(() => setShowMuzzleFlash(false), 150);
     },
     [bullets.length, camera, fire, isFirstPerson, position]
   );
