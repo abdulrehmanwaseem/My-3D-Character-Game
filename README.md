@@ -1,6 +1,7 @@
 # My 3D Character Game
 
-![image](https://github.com/user-attachments/assets/3fb1da4c-9244-46dd-ae87-2213aa69ed03)
+![image](https://github.com/user-attachments/assets/6b924fb3-6705-4af7-aa3a-162f8af443c3)
+
 
 This project features my personal 3D face model as the main character, set in a recreation of the iconic CS:GO Dust map. The game provides a custom third-person controller and camera view, creating an immersive and personalized gaming experience that blends familiar game environments with unique character design.
 
